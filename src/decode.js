@@ -46,7 +46,7 @@ function decode(op) {
       //TODO: fill out
       {const rd = bitsfrom(op, 7, 5);
       const funct3 = bitsfrom(op, 12, 3);
-      const rs1 = bistfrom(op, 15, 5);
+      const rs1 = bitsfrom(op, 15, 5);
       const rs2 = bitsfrom(op, 20, 5)
       const funct7 = bitsfrom(op, 25, 7)
       
@@ -223,7 +223,7 @@ function decode(op) {
         const imm_1_10 = bitsfrom(op, 20, 10)
         const imm_20 = bitsfrom(op, 31, 1)
 
-        const imm = combine([0, imm_1_10, imm_11, imm_12_19, imm_20], [1, 10, 1, 8, 1] )
+        const imm = combine([[0, 1], [imm_1_10, 10], [imm_11, 1], [imm_12_19, 8], [imm_20, 1]])
       
         switch (opcode) {
           case 0b1101111: //JAL
@@ -245,88 +245,34 @@ function gettype(opcode) {
 
   switch (opcode) {
     //R-type
-    case 0b0110011: //ADD
-    case 0b0110011: //SUB
-    case 0b0110011: //SLL
-    case 0b0110011: //SLT
-    case 0b0110011: //SLTU
-    case 0b0110011: //XOR
-    case 0b0110011: //SRL
-    case 0b0110011: //SRA
-    case 0b0110011: //OR
-    case 0b0110011: //AND
-    case 0b0010011: //SLLI
-    case 0b0010011: //SRLI
-    case 0b0010011: //SRAI
-    case 0b0001111: //FENCE
-    case 0b1110011: //MUL
-    case 0b1110011: //MULH
-    case 0b1110011: //MULHSU
-    case 0b1110011: //MULHU
-    case 0b1110011: //DIV
-    case 0b1110011: //DIVU
-    case 0b1110011: //REM
-    case 0b1110011: //REMU
-    case 0b1110011: //LR.W
-    case 0b1110011: //SC.W
-    case 0b1110011: //AMOSWAP.W
-    case 0b1110011: //AMOADD.W
-    case 0b1110011: //AMOXOR.W
-    case 0b1110011: //AMOAND.W
-    case 0b1110011: //AMOOR.W
-    case 0b1110011: //AMOMIN.W
-    case 0b1110011: //AMOMAX.W
-    case 0b1110011: //AMOMINU.W
-    case 0b1110011: //AMOMAXU.W
+    case 0b0110011:
+    case 0b0010011:
+    case 0b0001111:
+    case 0b1110011:
       return TYPES.R;
     //I-type
-    case 0b1100111: //JALR
-    case 0b0000011: //LB
-    case 0b0000011: //LH
-    case 0b0000011: //LW
-    case 0b0000011: //LBU
-    case 0b0000011: //LHU
-    case 0b0010011: //ADDI
-    case 0b0010011: //SLTI
-    case 0b0010011: //SLTIU
-    case 0b0010011: //XORI
-    case 0b0010011: //ORI
-    case 0b0010011: //ANDI
-    case 0b0001111: //FENCE.I
-    case 0b1110011: //CSRRW
-    case 0b1110011: //CSRRS
-    case 0b1110011: //CSRRC
-    case 0b1110011: //CSRRWI
-    case 0b1110011: //CSRRSI
-    case 0b1110011: //CSRRCI
+    case 0b1100111:
+    case 0b0000011:
+    case 0b0010011:
+    case 0b0001111:
+    case 0b1110011:
       return TYPES.I;
     //S-type
-    case 0b0100011: //SB
-    case 0b0100011: //SH
-    case 0b0100011: //SW
+    case 0b0100011:
       return TYPES.S;
     //B-type
-    case 0b1100011: //BEQ
-    case 0b1100011: //BNE
-    case 0b1100011: //BLT
-    case 0b1100011: //BGE
-    case 0b1100011: //BLTU
-    case 0b1100011: //BGEU
+    case 0b1100011:
       return TYPES.B
     //U-type
-    case 0b0110111: //LUI
-    case 0b0010111: //AUIPC
+    case 0b0110111:
+    case 0b0010111:
       return TYPES.U
     //J-type
-    case 0b1101111: //JAL
+    case 0b1101111:
       return TYPES.J
     //OTHER-type
-    case 0b0001111: //FENCE.TSO
-    case 0b0001111: //PAUSE
-    case 0b1110011: //ECALL
-    case 0b1110011: //EBREAK
+    case 0b0001111:
+    case 0b1110011:
       return TYPES.OTHER
   }
-
-  
 }
