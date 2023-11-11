@@ -44,7 +44,7 @@ function decode(op) {
 
     case TYPES.R:
       //TODO: fill out
-      const rd = bitsfrom(op, 7, 5);
+      {const rd = bitsfrom(op, 7, 5);
       const funct3 = bitsfrom(op, 12, 3);
       const rs1 = bistfrom(op, 15, 5);
       const rs2 = bitsfrom(op, 20, 5)
@@ -149,7 +149,9 @@ function decode(op) {
             }
         }
       }
+    }
       break;
+    
     case TYPES.I:
       {
         const rd = bitsfrom(op, 7, 5);
