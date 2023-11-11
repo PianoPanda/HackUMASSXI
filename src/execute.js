@@ -27,6 +27,11 @@ const csrData = {
 }
 let pc = 0;
 
+/**
+ * Refer to chapter 9, Zicsr 
+ * @param {number} csr - csrID 
+ * @returns {number} Value of the csr
+ */
 function readCSR(csr) {
   if (!csr in csrData) throw new Error(`Attempted to read CSR 0x${toHex(csr, 3)}, which is not implemented`)
   //TODO implement all side effects
@@ -36,6 +41,12 @@ function readCSR(csr) {
   }
 }
 
+/**
+ * writeCSR - write a value to a cs register
+ * @param {number} csr - csrID
+ * @param {unint32} value - value to write
+ * @returns {undefined}
+ */
 function writeCSR(csr, value) {
   if (!csr in csrData) throw new Error(`Attempted to write CSR 0x${toHex(csr, 3)}, which is not implemented`)
   const changedBits = csrData[csr] ^ value; //TODO deal with permissions
@@ -55,16 +66,16 @@ function writeCSR(csr, value) {
 
 /**
  * Gets the value in a register
- * @param {number} n
+ * @param {number} n - register
  * @returns {number}
  */
 export function getreg(n) {
-  return registers[n]
+  return registers[n];
 }
 
 /**
  * Sets the value in a register
- * @param {number} n
+ * @param {number} n - register
  * @param {uint32} val - what to set it to
  */
 export function setreg(n, val) {
@@ -75,36 +86,35 @@ export function setreg(n, val) {
  * Returns the current value of pc
  * @returns {number}
  */
-export function getpc() { return pc }
+export function getpc() { return pc; }
 /**
  * Sets pc to `value`.
  * EXTERNAL USE FOR TESTING ONLY.
  * @param {number} value 
  */
-export function setpc(value) { pc = value }
+export function setpc(value) { pc = value; }
 
 export const instructions = {
-
-  //TODO: TEST THIS
+  // TODO: TEST THIS
   // Type-R
   SLLI: function (rd, rs1, shamt) { //TODO SLLI SRLI SRAI lowkey confusing someone double check this
-    setreg(rd, getreg(rs1) << shamt)
+    setreg(rd, getreg(rs1) << shamt);
   },
   SRLI: function (rd, rs1, shamt) {
-    setreg(rd, getreg(rs1) >>> shamt)
+    setreg(rd, getreg(rs1) >>> shamt);
   },
   SRAI: function (rd, rs1, shamt) {
-    setreg(rd, getreg(rs1) >> shamt)
+    setreg(rd, getreg(rs1) >> shamt);
   },
 
   ADD: function (rd, rs1, rs2) {
-    setreg(rd, getreg(rs1) + getreg(rs2))
+    setreg(rd, getreg(rs1) + getreg(rs2));
   },
   SUB: function (rd, rs1, rs2) {
-    setreg(rd, getreg(rs2) - getreg(rs1))
+    setreg(rd, getreg(rs2) - getreg(rs1));
   },
   MUL: function (rd, rs1, rs2) {
-    setreg(rd, Number(BigInt.asIntN(32, BigInt(getreg(rs1)) * BigInt(getreg(rs2)))))
+    setreg(rd, Number(BigInt.asIntN(32, BigInt(getreg(rs1)) * BigInt(getreg(rs2)))));
   },
   SLL: function (rd, rs1, rs2) { //rs1 logical left shifted by lower 5 bits of rs2
     const shamt = parseInt(rs2.toString(2).slice(27), 2)
@@ -113,8 +123,8 @@ export const instructions = {
   },
   MULH: function (rd, rs1, rs2) { //rs1 and rs2 are signed
     setreg(rd, {
-      return: (BigInt(new Int32Array([getreg(rs1)])) * BigInt(new Int32Array([getreg(rs2)]))) >> BigInt(32)
-    })
+      return: (BigInt(new Int32Array([getreg(rs1)])) * BigInt(new Int32Array([getreg(rs2)]))) >> BigInt(32);
+    });
   },
   SLT: function (rd, rs1, rs2) { //compare signed
     setreg(rd, getreg(rs1) | 0 < getreg(rs2) | 0 ? 1 : 0)
@@ -126,19 +136,19 @@ export const instructions = {
     setreg(rd, product)
   },
   SLTU: function (rd, rs1, rs2) {
-    setreg(rd, getreg(rs1) < getreg(rs2) ? 1 : 0)
+    setreg(rd, getreg(rs1) < getreg(rs2) ? 1 : 0);
   },
   MULHU: function (rd, rs1, rs2) {
-    setreg(rd, BigInt(getreg(rs1)) * BigInt(getreg(rs2))) >>> BigInt(32)
+    setreg(rd, BigInt(getreg(rs1)) * BigInt(getreg(rs2))) >>> BigInt(32);
   },
   XOR: function (rd, rs1, rs2) {
-    setreg(rs1 ^ rs2)
+    setreg(rs1 ^ rs2);
   },
   DIV: function (rd, rs1, rs2) { //signed division
-    if (rs2 === 0) throw new Exception("Signed division by 0")
-    const div1 = new Int32Array([rs1])
-    const div2 = new Int32Array([rs2])
-    setreg(rd, (div1 / div2) | 0)
+    if (rs2 === 0) throw new Exception("Signed division by 0");
+    const div1 = new Int32Array([rs1]);
+    const div2 = new Int32Array([rs2]);
+    setreg(rd, (div1 / div2) | 0);
   },
   SRL: function (rd, rs1, rs2) {
     const shamt = parseInt(rs2.toString(2).slice(27), 2)
@@ -151,23 +161,24 @@ export const instructions = {
     setreg(rd, logRightShifted)
   },
   DIVU: function (rd, rs1, rs2) {
-    if (rs2 === 0) throw new Exception("Unsigned division by 0")
-    setreg(rd, div1 / div2)
+    // TODOFIX: Exception needs to be thrown in virtual computer
+    if (rs2 === 0) throw new Exception("Unsigned division by 0");
+    setreg(rd, div1 / div2);
   },
   OR: function (rd, rs1, rs2) {
-    setreg(rd, rs1 | rs2)
+    setreg(rd, rs1 | rs2);
   },
   REM: function (rd, rs1, rs2) { // sign mirrors rs1
-    const div1 = new Int32Array([rs1])
-    const div2 = new Int32Array([rs2])
-    const remainder = div1 / Math.abs(div2)
-    setreg(rd, remainder)
+    const div1 = new Int32Array([rs1]);
+    const div2 = new Int32Array([rs2]);
+    const remainder = div1 / Math.abs(div2);
+    setreg(rd, remainder);
   },
   AND: function (rd, rs1, rs2) {
-    setreg(rd, rs1 & rs2)
+    setreg(rd, rs1 & rs2);
   },
   REMU: function (rd, rs1, rs2) { //unsigned div for remainder
-    setreg(rd, rs1 / rs2) 
+    setreg(rd, rs1 / rs2);
   },
 
   //TODO Complete LRW and SCW once interrupt mechanism is in place
@@ -270,64 +281,64 @@ export const instructions = {
   // -------
 
   JALR: function (rd, rs1, imm) {
-    const addr = rs1 + imm & ~1
-    setreg(rd, getpc() + 4)
-    setpc(getpc() + addr - 4)
+    const addr = rs1 + imm & ~1;
+    setreg(rd, getpc() + 4);
+    setpc(getpc() + addr - 4);
   },
 
   //TODO: TEST THESE
   LB: function (rd, rs1, imm) {
-    setreg(rd, read32(getreg(rs1) + imm) << 24 >> 24)
+    setreg(rd, read32(getreg(rs1) + imm) << 24 >> 24);
   },
   LH: function (rd, rs1, imm) {
-    setreg(rd, read32(getreg(rs1) + imm) << 16 >> 16)
+    setreg(rd, read32(getreg(rs1) + imm) << 16 >> 16);
   },
   LW: function (rd, rs1, imm) {
-    setreg(rd, read32(getreg(rs1) + imm))
+    setreg(rd, read32(getreg(rs1) + imm));
   },
   LBU: function (rd, rs1, imm) {
-    setreg(rd, read32(getreg(rs1) + imm) & 0xff)
+    setreg(rd, read32(getreg(rs1) + imm) & 0xff);
   },
   LHU: function (rd, rs1, imm) {
-    setreg(rd, read32(getreg(rs1) + imm) & 0xffff)
+    setreg(rd, read32(getreg(rs1) + imm) & 0xffff);
   },
 
   //TODO: TEST THESE
   SB: function (rs1, rs2, imm) {
-    write32(getreg(rs1) + imm, rs2 << 24 >> 24)
+    write32(getreg(rs1) + imm, rs2 << 24 >> 24);
   },
   SH: function (rs1, rs2, imm) {
-    write32(getreg(rs1) + imm, rs2 << 16 >> 16)
+    write32(getreg(rs1) + imm, rs2 << 16 >> 16);
   },
   SW: function (rs1, rs2, imm) {
-    write32(getreg(rs1) + imm, rs2)
+    write32(getreg(rs1) + imm, rs2);
   },
 
   ADDI: function (rd, rs1, imm) {
-    setreg(rd, getreg(rs1) + imm)
+    setreg(rd, getreg(rs1) + imm);
   },
   STLI: function (rd, rs1, imm) {
-    setreg(rd, getreg(rs1) < imm ? 1 : 0)
+    setreg(rd, getreg(rs1) < imm ? 1 : 0);
   },
   SLTIU: function (rd, rs1, imm) {
-    setreg(rd, compuns(getreg(rs1), imm) < 0 ? 0 : 1)
+    setreg(rd, compuns(getreg(rs1), imm) < 0 ? 0 : 1);
   },
   XORI: function (rd, rs1, imm) {
-    setreg(rd, getreg(rs1) ^ imm)
+    setreg(rd, getreg(rs1) ^ imm);
   },
   ORI: function (rd, rs1, imm) {
-    setreg(rd, getreg(rs1) | imm)
+    setreg(rd, getreg(rs1) | imm);
   },
   ANDI: function (rd, rs1, imm) {
-    setreg(rd, getreg(rs1) & imm)
+    setreg(rd, getreg(rs1) & imm);
   },
 
   FENCEIL: function () { },
 
   //TODO: TEST THIS
   JAL: function (rd, imm) {
-    setreg(rd, getpc() + 4)
-    setpc(getpc() + imm - 4)
+    setreg(rd, getpc() + 4);
+    setpc(getpc() + imm - 4);
   },
 
   CSRRW: function (rd, rs1, csr) {
@@ -370,7 +381,7 @@ export const instructions = {
 
   AUIPC: function (rd, imm) {
     const displacement = BigInt(imm) << 12n;
-    setreg(rd, Number((BigInt(getpc()) + displacement) & 0xFFFF_FFFFn))
+    setreg(rd, Number((BigInt(getpc()) + displacement) & 0xFFFF_FFFFn));
   },
 }
 
@@ -386,19 +397,15 @@ function cpuSteps(steps) {
     //ensure pc - offset < ram size => trap = 2
     //ensure pc - offset & 3 == 0 => trap = 1
 
-    const op = read32(getpc())
+    const op = read32(getpc());
 
-    decode(op, instructions)
+    decode(op, instructions);
 
     //do trap stuff?
     //do break stuff?
 
-    setpc(getpc() + 4)
+    setpc(getpc() + 4);
     csrData[0xC00]++; //Increment cycle counter
 
   }
-
 }
-
-
-
