@@ -16,14 +16,7 @@ test("bitsfrom", () => {
 
 
 test("combine", () => {
-    // const testBit = 0b0011110;
-    // console.log((decode.bitsfrom(testBit, 1, 3) >>> 0).toString(2));
-    // expect(decode.bitsfrom(testBit, 1, 3))
-    //     .toBe(0b1111);
-    // expect(decode.bitsfrom(testBit, 2, 3))
-    // .toBe(0b0111);
-    // expect(decode.bitsfrom(testBit, 1, 3))
-    // .toBe(0b1111);
-    // expect(() => {decode.bitsfrom(testBit, 0, 0)})
-    // .toThrow();
+    expect(decode.combine([[0, 29], [7, 3]])).toBe(7);
+    expect(decode.combine([[3, 2], [6, 7], [3, 5], [9, 18]]))
+        .toBe(-1022623735);
 });

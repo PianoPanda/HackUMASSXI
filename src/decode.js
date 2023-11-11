@@ -1,4 +1,8 @@
-
+/**
+ * Enum for types of instruction
+ * @readonly
+ * @enum {number}
+ */
 const TYPES = {
   R: 0,
   I: 1,
@@ -22,16 +26,24 @@ export function bitsfrom(what, start, nbits) {
 
 /**
  * Combines an array of bits of given lengths into one 32 bit num
- * @param {uint32[]} bits - bits to combine
- * @param {uint5[]} lengths - lengths that correspond to the bits
+ * @param {[uint32, number][]} data - [bits, length] 
+ * @returns {uint32} - output 32 bit number
  */
-function combine(bits, lengths) {
-
+export function combine(data) {
+  let ret = 0;
+  let count = 0;
+  for (const [bits, len] of data) {
+    ret |= ((bits & (-1 >>> 32 - len)) << (32 - (count + len)));
+    count += len;
+  } 
+  if (count != 32) throw new Error("Bits must fill uint32 exactly.");
+  return ret;
 }
 
 /**
  * Decodes a single instruction and calls the function
  * @param {uint32} op: 32 bit assembly instruction
+ * @returns {undefined}
  */
 function decode(op) {
 
@@ -48,7 +60,7 @@ function decode(op) {
       const funct3 = bitsfrom(op, 12, 3);
       const rs1 = bitsfrom(op, 15, 5);
       const rs2 = bitsfrom(op, 20, 5)
-      const funct7 = bitsfrom(op, 25, 7)
+      let funct7 = bitsfrom(op, 25, 7)
       
       switch (opcode) {
         case 0b0010011: 

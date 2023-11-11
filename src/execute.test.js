@@ -1,5 +1,5 @@
-const testExecutable = Uint8Array(
-  Uint32Array([
+const testExecutable = new Uint8Array(
+  new Uint32Array([
     0x064000ef, 0xfd010113, 0x02112623, 0x02812423, 0x03010413, 0xfca42e23,
     0xfcb42c23, 0xfe042623, 0x0200006f, 0xfdc42703, 0xfd842783, 0x40f707b3,
     0xfcf42e23, 0xfec42783, 0x00178793, 0xfef42623, 0xfdc42703, 0xfd842783,
