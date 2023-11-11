@@ -157,7 +157,7 @@ function decode(op) {
         const rd = bitsfrom(op, 7, 5);
         const func3 = bitsfrom(op, 12, 3); 
         const rs1 = bitsfrom(op, 15, 5);
-        const imm = bitsfrom(op, 20, 12);
+        const imm = bitsfrom(op, 20, 12) << 20 >> 20;
       
         switch (opcode) {
           case 0b1100111:
@@ -223,7 +223,7 @@ function decode(op) {
         const imm_1_10 = bitsfrom(op, 20, 10)
         const imm_20 = bitsfrom(op, 31, 1)
 
-        const imm = combine([[0, 1], [imm_1_10, 10], [imm_11, 1], [imm_12_19, 8], [imm_20, 1]])
+        const imm = combine([[0, 1], [imm_1_10, 10], [imm_11, 1], [imm_12_19, 8], [imm_20, 1]]) << 12 >> 12
       
         switch (opcode) {
           case 0b1101111: //JAL
