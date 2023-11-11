@@ -116,20 +116,20 @@ export const instructions = {
       return: (BigInt(Int32Array([getreg(rs1)])) * BigInt(Int32Array([getreg(rs2)]))) >> BigInt(32)
     })
   },
-  SLT: function (rd, rs1, rs2) {
-
+  SLT: function (rd, rs1, rs2) { //compare signed
+    setreg(rd, getreg(rs1) | 0 < getreg(rs2) | 0 ? 1: 0)
   },
   MULHSU: function(rd, rs1, rs2) { //rs1 signed, rs2 unsigned
     const highWord = parseInt(getreg(rs1).toString(2).slice(0, 4), 2)
     const lowWord = parseInt(getreg(rs2).toString(2).slice(28), 2)
-    const product = BigInt(Int32Array([highWord])) * BigInt(lowWord) >> BigInt(32)
+    const product = BigInt(Int32Array([highWord])) * BigInt(lowWord) >>> BigInt(32)
     setreg(rd, product)
   },
   SLTU: function (rd, rs1, rs2) {
-
+    setreg(rd, getreg(rs1) < getreg(rs2) ? 1 : 0)
   },
   MULHU: function (rd, rs1, rs2) {
-    setreg(rd, BigInt(getreg(rs1)) * BigInt(getreg(rs2))) >> BigInt(32)
+    setreg(rd, BigInt(getreg(rs1)) * BigInt(getreg(rs2))) >>> BigInt(32)
   },
   XOR: function (rd, rs1, rs2) {
 
@@ -139,7 +139,7 @@ export const instructions = {
   },
   SRL: function (rd, rs1, rs2) {
     const shamt = parseInt(rs2.toString(2).slice(27), 2)
-    const rightShifted = rs1 >> shamt 
+    const rightShifted = rs1 >>> shamt 
     setreg(rd, rightShifted)
   },
   SRA: function (rd, rs1, rs2) { // arithmetic right shift //TODO
