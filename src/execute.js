@@ -2,7 +2,7 @@ import { read32, write32 } from "./ram.js"
 import { compuns } from "./util.js"
 
 const registers = Uint32Array(32).fill(0);
-const csr = {
+const csrData = {
   [0x300]: 0x00000000, // MRW: mstatus [refer to privileged: 3.1.6 Machine Status Registers for info]
   [0x301]: 0x40401101, // MRW: misa [why is this read/write????? this is a constant representing enabled RISC-V extensions]
   [0x304]: 0x00000000, // MRW: mie [bit i represents if interrupt i is enabled]
@@ -17,6 +17,19 @@ const csr = {
   [0xC00]: 0x00000000, // URO: cycle [This is uptime in cycles]
 
   [0xF11]: 0xff0ff0ff, // MRO: mvendorid [Extra Credit: make this the funny number]
+}
+
+function readCSR(csr) {
+  if (!csr in csrData) throw new Error(`Attempted to read CSR 0x${toHex(csr, 3)}, which is not implemented`)
+  return csrData[csr];
+  //TODO do side effects
+}
+
+function writeCSR(csr, value) {
+  if (!csr in csrData) throw new Error(`Attempted to write CSR 0x${toHex(csr, 3)}, which is not implemented`)
+  const changedBits = csrData[csr] ^ value; //TODO deal with permissions
+  csrData[csr] = value;
+  //TODO do side effects
 }
 
 /**
@@ -34,23 +47,23 @@ function getreg(n) {
  * @param {uint32} val - what to set it to
  */
 function setreg(n, val) {
-  if(n !== 0) registers[n] = val & 0xffffffff;
+  if (n !== 0) registers[n] = val & 0xffffffff;
 }
 
-function getpc() {}
-function setpc() {}
+function getpc() { }
+function setpc() { }
 
 export const instructions = {
 
   //TODO: TEST THIS
   // Type-R
-  SLLI: function(rd, rs1, shamt) {
+  SLLI: function (rd, rs1, shamt) {
 
   },
-  SRLI: function(rd, rs1, shamt) {
+  SRLI: function (rd, rs1, shamt) {
 
   },
-  SRAI: function(rd, rs1, shamt) {
+  SRAI: function (rd, rs1, shamt) {
 
   },
 
@@ -79,151 +92,175 @@ export const instructions = {
       return: setreg(BigInt(Int32Array([getreg(rs1)])) * BigInt(getreg(rs2))) >> BigInt(32)
       })
   },
-  SLTU: function(rd, rs1, rs2) {
+  SLTU: function (rd, rs1, rs2) {
 
   },
   MULHU: function(rd, rs1, rs2) {
     setreg(rd, BigInt(getreg(rs1)) * BigInt(getreg(rs2))) >> BigInt(32)
   },
-  XOR: function(rd, rs1, rs2) {
+  XOR: function (rd, rs1, rs2) {
 
   },
-  DIV: function(rd, rs1, rs2) {
+  DIV: function (rd, rs1, rs2) {
 
   },
-  SRL: function(rd, rs1, rs2) {
+  SRL: function (rd, rs1, rs2) {
 
   },
-  SRA: function(rd, rs1, rs2) {
+  SRA: function (rd, rs1, rs2) {
 
   },
-  DIVU: function(rd, rs1, rs2) {
+  DIVU: function (rd, rs1, rs2) {
 
   },
-  OR: function(rd, rs1, rs2) {
+  OR: function (rd, rs1, rs2) {
 
   },
-  REM: function(rd, rs1, rs2) {
+  REM: function (rd, rs1, rs2) {
 
   },
-  AND: function(rd, rs1, rs2) {
+  AND: function (rd, rs1, rs2) {
 
   },
-  REMU: function(rd, rs1, rs2) {
+  REMU: function (rd, rs1, rs2) {
 
   },
 
-  LRW: function(rd, rs1, rl, aq) {
+  LRW: function (rd, rs1, rl, aq) {
 
   },
-  SCW: function(rd, rs1, rs2, rl, aq) {
+  SCW: function (rd, rs1, rs2, rl, aq) {
 
   },
-  AMOSWAPW: function(rd, rs1, rs2, rl, aq) {
+  AMOSWAPW: function (rd, rs1, rs2, rl, aq) {
 
   },
-  AMOADDW: function(rd, rs1, rs2, rl, aq) {
+  AMOADDW: function (rd, rs1, rs2, rl, aq) {
 
   },
-  AMOXORW: function(rd, rs1, rs2, rl, aq) {
+  AMOXORW: function (rd, rs1, rs2, rl, aq) {
 
   },
-  AMOANDW: function(rd, rs1, rs2, rl, aq) {
+  AMOANDW: function (rd, rs1, rs2, rl, aq) {
 
   },
-  AMOORW: function(rd, rs1, rs2, rl, aq) {
+  AMOORW: function (rd, rs1, rs2, rl, aq) {
 
   },
-  AMOMINW: function(rd, rs1, rs2, rl, aq) {
+  AMOMINW: function (rd, rs1, rs2, rl, aq) {
 
   },
-  AMOMAXW: function(rd, rs1, rs2, rl, aq) {
+  AMOMAXW: function (rd, rs1, rs2, rl, aq) {
 
   },
-  AMOMINUW: function(rd, rs1, rs2, rl, aq) {
+  AMOMINUW: function (rd, rs1, rs2, rl, aq) {
 
   },
-  AMOMAXW: function(rd, rs1, rs2, rl, aq) {
+  AMOMAXW: function (rd, rs1, rs2, rl, aq) {
 
   },
-  AMOMINUW: function(rd, rs1, rs2, rl, aq) {
+  AMOMINUW: function (rd, rs1, rs2, rl, aq) {
 
   },
-  AMOMAXUW: function(rd, rs1, rs2, rl, aq) {
+  AMOMAXUW: function (rd, rs1, rs2, rl, aq) {
 
   },
-// -------
+  // -------
 
-  JALR: function(rd, rs1, imm) {
+  JALR: function (rd, rs1, imm) {
     const addr = rs1 + imm & ~1
     setreg(rd, getpc() + 4)
     setpc(getpc() + addr - 4)
   },
 
   //TODO: TEST THESE
-  LB: function(rd, rs1, imm) {
+  LB: function (rd, rs1, imm) {
     setreg(rd, read32(getreg(rs1) + imm) << 24 >> 24)
   },
-  LH: function(rd, rs1, imm) {
+  LH: function (rd, rs1, imm) {
     setreg(rd, read32(getreg(rs1) + imm) << 16 >> 16)
   },
-  LW: function(rd, rs1, imm) {
+  LW: function (rd, rs1, imm) {
     setreg(rd, read32(getreg(rs1) + imm))
   },
-  LBU: function(rd, rs1, imm) {
+  LBU: function (rd, rs1, imm) {
     setreg(rd, read32(getreg(rs1) + imm) & 0xff)
   },
-  LHU: function(rd, rs1, imm) {
+  LHU: function (rd, rs1, imm) {
     setreg(rd, read32(getreg(rs1) + imm) & 0xffff)
   },
 
   //TODO: TEST THESE
-  SB: function(rs1, rs2, imm) {
+  SB: function (rs1, rs2, imm) {
     write32(getreg(rs1) + imm, rs2 << 24 >> 24)
   },
-  SH: function(rs1, rs2, imm) {
+  SH: function (rs1, rs2, imm) {
     write32(getreg(rs1) + imm, rs2 << 16 >> 16)
   },
-  SW: function(rs1, rs2, imm) {
+  SW: function (rs1, rs2, imm) {
     write32(getreg(rs1) + imm, rs2)
   },
 
-  ADDI: function(rd, rs1, imm) {
+  ADDI: function (rd, rs1, imm) {
     setreg(rd, getreg(rs1) + imm)
   },
-  STLI: function(rd, rs1, imm) {
+  STLI: function (rd, rs1, imm) {
     setreg(rd, getreg(rs1) < imm ? 1 : 0)
   },
-  SLTIU: function(rd, rs1, imm) {
+  SLTIU: function (rd, rs1, imm) {
     setreg(rd, compuns(getreg(rs1), imm) < 0 ? 0 : 1)
   },
-  XORI: function(rd, rs1, imm) {
+  XORI: function (rd, rs1, imm) {
     setreg(rd, getreg(rs1) ^ imm)
   },
-  ORI: function(rd, rs1, imm) {
+  ORI: function (rd, rs1, imm) {
     setreg(rd, getreg(rs1) | imm)
   },
-  ANDI: function(rd, rs1, imm) {
+  ANDI: function (rd, rs1, imm) {
     setreg(rd, getreg(rs1) & imm)
   },
 
-  FENCEIL: function() {},
+  FENCEIL: function () { },
 
   //TODO: TEST THIS
-  JAL: function(rd, imm) {
+  JAL: function (rd, imm) {
     setreg(rd, getpc() + 4)
     setpc(getpc() + imm - 4)
   },
 
-  CSRRW: function(rd, rs1, csr) {},
-  CSRRS: function(rd, rs1, csr) {},
-  CSRRC: function(rd, rs1, csr) {},
-  CSRRWI: function(rd, uimm, csr) {},
-  CSRRSI: function(rd, uimm, csr) {},
-  CSRRCI: function(rd, uimm, csr) {},
+  CSRRW: function (rd, rs1, csr) {
+    const source = getreg(rs1);
+    if (rd !== 0) setreg(rd, readCSR(csr));
+    writeCSR(csr, source);
+  },
+  CSRRS: function (rd, rs1, csr) {
+    const source = getreg(rs1);
+    setreg(rd, readCSR(csr));
+    if (rs1 !== 0) writeCSR(csr, oldCSR | source);
+  },
+  CSRRC: function (rd, rs1, csr) {
+    const source = getreg(rs1);
+    setreg(rd, readCSR(csr));
+    if (rs1 !== 0) writeCSR(csr, oldCSR & !source);
+  },
+  CSRRWI: function (rd, uimm, csr) {
+    const source = uimm;
+    if (rd !== 0) setreg(rd, readCSR(csr));
+    writeCSR(csr, source);
+  },
+  CSRRSI: function (rd, uimm, csr) {
+    const source = uimm;
+    setreg(rd, readCSR(csr));
+    if (uimm !== 0) writeCSR(csr, oldCSR | source);
+  },
+  CSRRCI: function (rd, uimm, csr) {
+    const source = uimm;
+    setreg(rd, readCSR(csr));
+    if (uimm !== 0) writeCSR(csr, oldCSR & !source);
+  },
 
-  ECALL: function() {},
-  EBREAK: function() {},
+  ECALL: function () { },
+  EBREAK: function () { },
 
 }
 
@@ -245,11 +282,11 @@ function cpuSteps(steps) {
 
     //do trap stuff?
     //do break stuff?
-    
+
     setpc(getpc() + 4)
-    
+
   }
-  
+
 }
 
 
