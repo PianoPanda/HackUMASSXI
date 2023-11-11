@@ -1,0 +1,3 @@
+[submodule "testfileartifacts/riscv-gnu-toolchain"]
+	path = testfileartifacts/riscv-gnu-toolchain
+	url = https://github.com/riscv-collab/riscv-gnu-toolchain.git
