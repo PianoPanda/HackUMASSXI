@@ -1,4 +1,4 @@
-export const RAM_SIZE = 1024 * 1024;
+export const RAM_SIZE = 1024;
 export const memory = new Uint8Array(RAM_SIZE);
 
 /**
@@ -39,4 +39,8 @@ export function write32(address, data) {
   memory[address + 1] = (data >> 8) & 0xff;
   memory[address + 2] = (data >> 16) & 0xff;
   memory[address + 3] = (data >> 24) & 0xff;
+}
+
+export function flushMemory() {
+  memory.fill(0)
 }
