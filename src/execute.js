@@ -16,6 +16,9 @@ const csrData = {
   [0x343]: 0x00000000, // MRW: mtval [Page fault address]
   [0x344]: 0x00000000, // MRW: mip [bit i represents if interrupt i is currently enqueued]
 
+  // Custom IO
+  [0x800]: 0x00000000, // Custom URW: value unused. write to write to term, read to read from term(non-blocking).
+
   // Cycle counter
   [0xC00]: 0x00000000, // URO: cycle [This is uptime in cycles]
 
@@ -37,6 +40,9 @@ function writeCSR(csr, value) {
   const changedBits = csrData[csr] ^ value; //TODO deal with permissions
   //TODO implement all side effects
   switch (csr) {
+    case 0x800:
+      console.log(`wrote ${value} to CSR 0x800`);
+      return;
     case 0xC00:
       return;
     case 0xF11:
