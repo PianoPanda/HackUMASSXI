@@ -1,3 +1,8 @@
+testfileartifacts/riscv-gnu-toolchain/*
+testfileartifacts/test.bin
+testfileartifacts/test.elf
+testfileartifacts/test.hex
+
 # Based on https://raw.githubusercontent.com/github/gitignore/main/Node.gitignore
 
 # Logs

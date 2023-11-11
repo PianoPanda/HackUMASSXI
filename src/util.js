@@ -32,6 +32,17 @@ export function toBinary(value) {
 }
 
 /**
+ * Converts an integer into a 32 bit hex string.
+ * Different padding length is possible.
+ * @param {number} value Must be an integer.
+ * @param {number} len
+ * @returns {string} 
+ */
+export function toHex(value, len = 8) {
+    return format32(value).toString(16).padStart(len, 0);
+}
+
+/**
  * Compares numbers as unsigned integers.
  * @param {number} a
  * @param {number} b

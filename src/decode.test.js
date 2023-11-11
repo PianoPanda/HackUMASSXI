@@ -30,3 +30,17 @@ test("decode j suite", () => {
     decode.decode(0xF6DEFE6F, DEBUG_INSTRUCTION);
 });
 
+const wantparams = (val) => (...a) => expect(a).toEqual(val)
+
+test("decode r suite", () => {
+    decode.decode(0x33058500, { ADD: wantparams([10, 10, 8]) })
+})
+
+test("decode i suite", () => {
+    decode.decode(0x8320c100, { LW: wantparams([1, 2, 12]) })
+})
+
+test("decode s suite", () => {
+    decode.decode(0x23261100, { SW: console.log})
+})
+
