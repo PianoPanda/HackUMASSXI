@@ -1,5 +1,5 @@
 import { loadbin } from "./boot.js"
-import { read32, write32, memory, flushMemory } from "./ram.js"
+import { read32, flushMemory } from "./ram.js"
 import { test } from "bun:test";
 
 test("tests loadbin", async () => {
