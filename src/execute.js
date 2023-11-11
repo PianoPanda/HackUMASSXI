@@ -90,8 +90,15 @@ export const instructions = {
   MUL: function (rd, rs1, rs2) {
     setreg(rd, BigInt(getreg(rs1)) * BigInt(getreg(rs2)))
   },
+<<<<<<< Updated upstream
   SLL: function (rd, rs1, rs2) {
 
+=======
+  SLL: function(rd, rs1, rs2) { //rs1 logical left shifted by lower 5 bits of rs2
+    const shamt = parseInt(rs2.toString(2).slice(27), 2)
+    const leftShifted = rs1 << shamt 
+    setreg(rd, leftShifted)
+>>>>>>> Stashed changes
   },
   MULH: function (rd, rs1, rs2) { //rs1 and rs2 are signed
     setreg(rd, {
@@ -120,10 +127,14 @@ export const instructions = {
 
   },
   SRL: function (rd, rs1, rs2) {
-
+    const shamt = parseInt(rs2.toString(2).slice(27), 2)
+    const rightShifted = rs1 >> shamt 
+    setreg(rd, rightShifted)
   },
-  SRA: function (rd, rs1, rs2) {
-
+  SRA: function (rd, rs1, rs2) { // arithmetic right shift //TODO
+    const shamt = parseInt(rs2.toString(2).slice(27), 2)
+    const logRightShifted = rs1 >> shamt 
+    setreg(rd, logRightShifted)
   },
   DIVU: function (rd, rs1, rs2) {
 
