@@ -20,5 +20,12 @@ test("MUL", () => {
   setreg(1, 4)
   setreg(2, 5)
   instructions.MUL(3, 1, 2)
-  console.log(getreg(3) == 20)
+  assert(getreg(3) == 20)
+})
+
+test("MUL: large values", () => {
+  setreg(1, 0xFFFF_FFFF)
+  setreg(2, 0xFFFF_FFFF)
+  instructions.MUL(3, 1, 2)
+  assert(getreg(3) === 1)
 })
