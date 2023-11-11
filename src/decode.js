@@ -151,7 +151,6 @@ function decode(op) {
       }
     }
       break;
-    
     case TYPES.I:
       {
         const rd = bitsfrom(op, 7, 5);
