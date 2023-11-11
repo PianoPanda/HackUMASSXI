@@ -25,6 +25,7 @@ const csrData = {
   // Vendor ID
   [0xF11]: 0xff0ff0ff, // MRO: mvendorid [Extra Credit: make this the funny number]
 }
+let pc = 0;
 
 function readCSR(csr) {
   if (!csr in csrData) throw new Error(`Attempted to read CSR 0x${toHex(csr, 3)}, which is not implemented`)
@@ -70,8 +71,17 @@ export function setreg(n, val) {
   if (n !== 0) registers[n] = val & 0xffffffff;
 }
 
-function getpc() { }
-function setpc() { }
+/**
+ * Returns the current value of pc
+ * @returns {number}
+ */
+export function getpc() { return pc }
+/**
+ * Sets pc to `value`.
+ * EXTERNAL USE FOR TESTING ONLY.
+ * @param {number} value 
+ */
+export function setpc(value) { pc = value }
 
 export const instructions = {
 
@@ -289,6 +299,14 @@ export const instructions = {
   ECALL: function () { },
   EBREAK: function () { },
 
+  LUI: function (rd, imm) {
+    setreg(rd, Number(BigInt(imm) << 12n));
+  },
+
+  AUIPC: function (rd, imm) {
+    const displacement = BigInt(imm) << 12n;
+    setreg(rd, Number((BigInt(getpc()) + displacement) & 0xFFFF_FFFFn))
+  },
 }
 
 function cpuSteps(steps) {
