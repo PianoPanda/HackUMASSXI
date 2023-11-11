@@ -106,9 +106,9 @@ export const instructions = {
   MUL: function (rd, rs1, rs2) {
     setreg(rd, Number(BigInt.asIntN(32, BigInt(getreg(rs1)) * BigInt(getreg(rs2)))))
   },
-  SLL: function(rd, rs1, rs2) { //rs1 logical left shifted by lower 5 bits of rs2
+  SLL: function (rd, rs1, rs2) { //rs1 logical left shifted by lower 5 bits of rs2
     const shamt = parseInt(rs2.toString(2).slice(27), 2)
-    const leftShifted = rs1 << shamt 
+    const leftShifted = rs1 << shamt
     setreg(rd, leftShifted)
   },
   MULH: function (rd, rs1, rs2) { //rs1 and rs2 are signed
@@ -117,9 +117,9 @@ export const instructions = {
     })
   },
   SLT: function (rd, rs1, rs2) { //compare signed
-    setreg(rd, getreg(rs1) | 0 < getreg(rs2) | 0 ? 1: 0)
+    setreg(rd, getreg(rs1) | 0 < getreg(rs2) | 0 ? 1 : 0)
   },
-  MULHSU: function(rd, rs1, rs2) { //rs1 signed, rs2 unsigned
+  MULHSU: function (rd, rs1, rs2) { //rs1 signed, rs2 unsigned
     const highWord = parseInt(getreg(rs1).toString(2).slice(0, 4), 2)
     const lowWord = parseInt(getreg(rs2).toString(2).slice(28), 2)
     const product = BigInt(new Int32Array([highWord])) * BigInt(lowWord) >>> BigInt(32)
@@ -142,12 +142,12 @@ export const instructions = {
   },
   SRL: function (rd, rs1, rs2) {
     const shamt = parseInt(rs2.toString(2).slice(27), 2)
-    const rightShifted = rs1 >>> shamt 
+    const rightShifted = rs1 >>> shamt
     setreg(rd, rightShifted)
   },
   SRA: function (rd, rs1, rs2) { // arithmetic right shift //TODO
     const shamt = parseInt(rs2.toString(2).slice(27), 2)
-    const logRightShifted = rs1 >> shamt 
+    const logRightShifted = rs1 >> shamt
     setreg(rd, logRightShifted)
   },
   DIVU: function (rd, rs1, rs2) {
@@ -174,48 +174,91 @@ export const instructions = {
 
   },
   // Maxwell working on this
+  // x[rd] = AMO32(M[x[rs1]] SWAP x[rs2])
   AMOSWAPW: function (rd, rs1, rs2, rl, aq) {
-
+    let arg1 = read32(getreg(rs1));
+    let arg2 = getreg(rs2);
+    setreg(rd, arg1);
+    setreg(rs2, arg1);
+    write32(getreg(rs1), arg2);
   },
   // Maxwell working on this
+  // x[rd] = AMO32(M[x[rs1]] + x[rs2])
   AMOADDW: function (rd, rs1, rs2, rl, aq) {
+    let arg1 = read32(getreg(rs1));
+    let arg2 = getreg(rs2);
+    setreg(rd, arg1);
+    const result = arg1 + arg2
+    write32(getreg(rs1), result)
 
   },
   // Maxwell working on this
+  // x[rd] = AMO32(M[x[rs1]] ^ x[rs2])
   AMOXORW: function (rd, rs1, rs2, rl, aq) {
+    let arg1 = read32(getreg(rs1));
+    let arg2 = getreg(rs2);
+    setreg(rd, arg1);
+    const result = arg1 ^ arg2
+    write32(getreg(rs1), result)
 
   },
   // Maxwell working on this
+  // x[rd] = AMO32(M[x[rs1]] & x[rs2])
   AMOANDW: function (rd, rs1, rs2, rl, aq) {
+    let arg1 = read32(getreg(rs1));
+    let arg2 = getreg(rs2);
+    setreg(rd, arg1);
+    const result = arg1 & arg2
+    write32(getreg(rs1), result)
 
   },
   // Maxwell working on this
+  // x[rd] = AMO32(M[x[rs1]] | x[rs2])
   AMOORW: function (rd, rs1, rs2, rl, aq) {
+    let arg1 = read32(getreg(rs1));
+    let arg2 = getreg(rs2);
+    setreg(rd, arg1);
+    const result = arg1 | arg2
+    write32(getreg(rs1), result)
 
   },
   // Maxwell working on this
+  // x[rd] = AMO32(M[x[rs1]] MIN x[rs2])
   AMOMINW: function (rd, rs1, rs2, rl, aq) {
+    let arg1 = read32(getreg(rs1));
+    let arg2 = getreg(rs2);
+    setreg(rd, arg1);
+    const result = Math.min(arg1 | 0, arg2 | 0)
+    write32(getreg(rs1), result)
 
   },
   // Maxwell working on this
+  // x[rd] = AMO32(M[x[rs1]] MAX x[rs2])
   AMOMAXW: function (rd, rs1, rs2, rl, aq) {
+    let arg1 = read32(getreg(rs1));
+    let arg2 = getreg(rs2);
+    setreg(rd, arg1);
+    const result = Math.max(arg1 | 0, arg2 | 0)
+    write32(getreg(rs1), result)
 
   },
   // Maxwell working on this
+  // x[rd] = AMO32(M[x[rs1]] MINU x[rs2])
   AMOMINUW: function (rd, rs1, rs2, rl, aq) {
-
+    let arg1 = read32(getreg(rs1));
+    let arg2 = getreg(rs2);
+    setreg(rd, arg1);
+    const result = Math.min(arg1, arg2)
+    write32(getreg(rs1), result)
   },
   // Maxwell working on this
-  AMOMAXW: function (rd, rs1, rs2, rl, aq) {
-
-  },
-  // Maxwell working on this
-  AMOMINUW: function (rd, rs1, rs2, rl, aq) {
-
-  },
-  // Maxwell working on this
+  // x[rd] = AMO32(M[x[rs1]] MAXU x[rs2])
   AMOMAXUW: function (rd, rs1, rs2, rl, aq) {
-
+    let arg1 = read32(getreg(rs1));
+    let arg2 = getreg(rs2);
+    setreg(rd, arg1);
+    const result = Math.max(arg1, arg2)
+    write32(getreg(rs1), result)
   },
   // -------
 
