@@ -29,10 +29,9 @@ function combine(bits, lengths) {
 
 }
 
-
-/* decode
- * takes op: u32, a single assembly instruction
- * calls the instruction, returns void
+/**
+ * Decodes a single instruction and calls the function
+ * @param {uint32} op: 32 bit assembly instruction
  */
 function decode(op) {
 
@@ -152,29 +151,58 @@ function decode(op) {
       }
       break;
     case TYPES.I:
-
-      const rd = bitsfrom(op, 7, 5);
-      const func = bitsform(op, 12, 3); 
-      const rs1 = bitsfrom(op, 15, 5);
-      const imm = bitsfrom(op, 20, 12);
+      {
+        const rd = bitsfrom(op, 7, 5);
+        const func3 = bitsfrom(op, 12, 3); 
+        const rs1 = bitsfrom(op, 15, 5);
+        const imm = bitsfrom(op, 20, 12);
       
-      switch (opcode) {
-        case 0b0010011:
-          switch (func) {
-            case 0b000:
-              //TODO: implement add code
-              break
-            default:
-              throw new Exception(f`Illegal func for instruction ${op.toString(16)}`)
-          }
-          
-          break
+        switch (opcode) {
+          case 0b1100111:
+            switch (func3) {
+              case 0b000: //JALR
+                break
+              default:
+                throw new Exception(f`Illegal func for instruction ${op.toString(16)}`)
+            }
+          case 0b0000011:
+            switch (func3) {
+              case 0b000: //LB
+                break
+              case 0b001: //LH
+                break
+              case 0b010: //LW
+                break
+              case 0b100: //LBU
+                break
+              case 0b101: //LHU
+                break
+              default:
+                throw new Exception(f`Illegal func for instruction ${op.toString(16)}`)
+            }
+            break
+          case 0b0010011:
+            switch (func3) {
+              case 0b000: //ADDI
+                break
+              case 0b001: //SLTI
+                break
+              case 0b011: //SLTIU
+                break
+              case 0b100: //XORI
+                break
+              case 0b110: //ORI
+                break
+              case 0b111: //ANDI
+              default:
+                throw new Exception(f`Illegal func for instruction ${op.toString(16)}`)
+            }
+          case 0b0001111: //FENCE.I it's a noop I guess?
+            break
           default:
             throw new Exception(f`Illegal opcode for instruction ${op.toString(16)}`)
+        }
       }
-
-
-      
       break;
     case TYPES.S:
       //TODO: fill out
@@ -186,7 +214,22 @@ function decode(op) {
       //TODO: fill out
       break;
     case TYPES.J:
-      //TODO: fill out
+      {
+        const rd = bitsfrom(op, 7, 5);
+        const imm_12_19 = bitsfrom(op, 12, 8);
+        const imm_11 = bitsfrom(op, 19, 1)
+        const imm_1_10 = bitsfrom(op, 20, 10)
+        const imm_20 = bitsfrom(op, 31, 1)
+
+        const imm = combine([0, imm_1_10, imm_11, imm_12_19, imm_20], [1, 10, 1, 8, 1] )
+      
+        switch (opcode) {
+          case 0b1101111: //JAL
+            break
+          default:
+            throw new Exception(f`Illegal opcode for instruction ${op.toString(16)}`)
+        }
+      }
       break;
     case TYPES.OTHER:
       //TODO: fill out
