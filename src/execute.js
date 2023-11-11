@@ -34,9 +34,14 @@ function compuns(a, b) {
 
 export const instructions = {
 
+  //TODO: TEST THIS
   JALR: function(rd, rs1, imm) {
-    //dunno
+    const addr = rs1 + imm & ~1
+    setreg(rd, getpc() + 4)
+    setpc(getpc() + addr - 4)
   },
+
+  //TODO: TEST THESE
   LB: function(_, rs1, _) {
     setreg(rs1, read32(getreg(rs1)) << 24 >> 24)
   },
@@ -74,9 +79,22 @@ export const instructions = {
 
   FENCEIL: function() {},
 
+  //TODO: TEST THIS
   JAL: function(rd, imm) {
-    
+    setreg(rd, getpc() + 4)
+    setpc(getpc() + imm - 4)
   },
+
+  CSRRW: function(rd, rs1, csr) {},
+  CSRRS: function(rd, rs1, csr) {},
+  CSRRC: function(rd, rs1, csr) {},
+  CSRRWI: function(rd, uimm, csr) {},
+  CSRRSI: function(rd, uimm, csr) {},
+  CSRRCI: function(rd, uimm, csr) {},
+
+  SB: function(rs1, rs2, imm) {},
+  SH: function(rs1, rs2, imm) {},
+  SW: function(rs1, rs2, imm) {},
 
 }
 

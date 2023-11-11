@@ -200,16 +200,77 @@ export function decode(op, i) {
             }
           //FENCE.I it's a noop I guess?
           case 0b0001111: i.FENCEI(); break
+          case 0b1110011: {
+            switch (func3) {
+              case 0b001: i.CSRRW(rd, rs1, imm); break
+              case 0b010: i.CSRRS(rd, rs1, imm); break
+              case 0b011: i.CSRRC(rd, rs1, imm); break
+              case 0b101: i.CSRRWI(rd, rs1, imm); break
+              case 0b110: i.CSRRSI(rd, rs1, imm); break
+              case 0b111: i.CSRRCI(rd, rs1, imm); break
+              default:
+                throw new Exception(`Illegal func for instruction ${op.toString(16)}`)
+            }
+          }
           default:
-            throw new Exception(f`Illegal opcode for instruction ${op.toString(16)}`)
+            throw new Exception(`Illegal opcode for instruction ${op.toString(16)}`)
         }
       }
       break;
     case TYPES.S:
-      //TODO: fill out
+      {
+        const imm_0_4 = bitsfrom(op, 7, 5)
+        const funct3 = bitsfrom(op, 12, 3)
+        const rs1 = bitsfrom(op, 15, 5)
+        const rs2 = bitsfrom(op, 20, 5)
+        const imm_5_11 = bitsfrom(op, 25, 7)
+
+        const imm = combine([imm_0_4, 5], [imm_5_11, 7])
+
+        switch (opcode) {
+          case 0b0100011:
+            switch (funct3) {
+              case 0b000: i.SB(rs1, rs2, imm); break
+              case 0b001: i.SH(rs1, rs2, imm); break
+              case 0b010: i.SW(rs1, rs2, imm); break
+              default:
+                throw new Exception("")
+            }
+            break
+          default:
+            throw new Exception("")
+        }
+      }
       break;
     case TYPES.B:
-      //TODO: fill out
+      {
+        const imm_11 = bitsfrom(op, 7, 1);
+        const imm_1_4 = bitsfrom(op, 8, 4);
+        const func3 = bitsfrom(op, 12, 3);
+        const rs1 = bitsfrom(op, 15, 5);
+        const rs2 = bitsfrom(op, 20, 5);
+        const imm_5_10 = bitsfrom(op, 25, 6);
+        const imm_12 = bitsfrom(op, 31, 1);
+
+        const imm = combine([[0, 1], [imm_1_4, 4], [imm_5_10, 6], [imm_11, 1], [imm_12, 1]])
+
+        switch (opcode) {
+          case 0b1100111:
+             switch (func3) {
+              case 0b000: i.BEQ(rs1, rs2, imm); break
+              case 0b001: i.BNE(rs1, rs2, imm); break
+              case 0b100: i.BLT(rs1, rs2, imm); break
+              case 0b101: i.BGE(rs1, rs2, imm); break
+              case 0b110: i.BLTU(rs1, rs2, imm); break
+              case 0b111: i.BGEU(rs1, rs2, imm); break
+              default:
+                throw new Exception(`Illegal func for instruction ${op.toString(16)}`)
+            }   
+            break
+          default:
+            throw new Exception(`Illegal opcode for instruction ${op.toString(16)}`)
+        }
+      }
       break;
     case TYPES.U:
       //TODO: fill out
@@ -225,9 +286,7 @@ export function decode(op, i) {
         const imm = combine([[0, 1], [imm_1_10, 10], [imm_11, 1], [imm_12_19, 8], [imm_20, 1]]) << 12 >> 12
       
         switch (opcode) {
-          case 0b1101111: //JAL
-            i.JAL(rd, imm)
-            break
+          case 0b1101111: i.JAL(rd, imm); break
           default:
             throw new Exception(f`Illegal opcode for instruction ${op.toString(16)}`)
         }
