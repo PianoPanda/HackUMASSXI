@@ -65,18 +65,18 @@ export function decode(op, i) {
       switch (opcode) {
         case 0b0010011: 
         switch (funct3) {
-          case 0b001: //SLLI, shamt, logical left shift
+          case 0b001: r.SLLI(rd, rs1, rs2)//SLLI, shamt, logical left shift
             //TODO:
             
             funct7 = 0b0000000
             break
-          case 0b101: // SRLI, shamt, logical right shift 
-            //TODO:
-            
-            funct7 = 0b0000000
-          case 0b101: //SRAI, shamt, arithmetic right shift
-            //TODO:
-            funct7 = 0b0100000
+          case 0b101:
+            switch (funct7) {
+              case 0b0000000: //TODO SRLI, shamt, logical right shift 
+              case ob0100000: //TODO SRAI, shamt, arithmetic right shift
+              default:
+                throw new Exception(f`SRLI or SRAI wrong ${op.toString(16)}`)
+            }
           default: 
             throw new Exception(f`Illegal func for instruction ${op.toString(16)}`)
         }
