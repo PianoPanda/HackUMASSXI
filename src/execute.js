@@ -77,14 +77,14 @@ export const instructions = {
 
   //TODO: TEST THIS
   // Type-R
-  SLLI: function (rd, rs1, shamt) {
-
+  SLLI: function (rd, rs1, shamt) { //TODO SLLI SRLI SRAI lowkey confusing someone double check this
+    setreg(rd, getreg(rs1) << shamt)
   },
   SRLI: function (rd, rs1, shamt) {
-
+    setreg(rd, getreg(rs1) >>> shamt)
   },
   SRAI: function (rd, rs1, shamt) {
-
+    setreg(rd, getreg(rs1) >> shamt)
   },
 
   ADD: function (rd, rs1, rs2) {
@@ -103,7 +103,7 @@ export const instructions = {
   },
   MULH: function (rd, rs1, rs2) { //rs1 and rs2 are signed
     setreg(rd, {
-      return: (BigInt(Int32Array([getreg(rs1)])) * BigInt(Int32Array([getreg(rs2)]))) >> BigInt(32)
+      return: (BigInt(new Int32Array([getreg(rs1)])) * BigInt(new Int32Array([getreg(rs2)]))) >> BigInt(32)
     })
   },
   SLT: function (rd, rs1, rs2) { //compare signed
@@ -112,7 +112,7 @@ export const instructions = {
   MULHSU: function(rd, rs1, rs2) { //rs1 signed, rs2 unsigned
     const highWord = parseInt(getreg(rs1).toString(2).slice(0, 4), 2)
     const lowWord = parseInt(getreg(rs2).toString(2).slice(28), 2)
-    const product = BigInt(Int32Array([highWord])) * BigInt(lowWord) >>> BigInt(32)
+    const product = BigInt(new Int32Array([highWord])) * BigInt(lowWord) >>> BigInt(32)
     setreg(rd, product)
   },
   SLTU: function (rd, rs1, rs2) {
@@ -122,10 +122,13 @@ export const instructions = {
     setreg(rd, BigInt(getreg(rs1)) * BigInt(getreg(rs2))) >>> BigInt(32)
   },
   XOR: function (rd, rs1, rs2) {
-
+    setreg(rs1 ^ rs2)
   },
-  DIV: function (rd, rs1, rs2) {
-
+  DIV: function (rd, rs1, rs2) { //signed division
+    if (rs2 === 0) throw new Exception("Signed division by 0")
+    const div1 = new Int32Array([rs1])
+    const div2 = new Int32Array([rs2])
+    setreg(rd, (div1 / div2) | 0)
   },
   SRL: function (rd, rs1, rs2) {
     const shamt = parseInt(rs2.toString(2).slice(27), 2)
@@ -138,16 +141,17 @@ export const instructions = {
     setreg(rd, logRightShifted)
   },
   DIVU: function (rd, rs1, rs2) {
-
+    if (rs2 === 0) throw new Exception("Unsigned division by 0")
+    setreg(rd, div1 / div2)
   },
   OR: function (rd, rs1, rs2) {
-
+    setreg(rd, rs1 | rs2)
   },
   REM: function (rd, rs1, rs2) {
 
   },
   AND: function (rd, rs1, rs2) {
-
+    setreg(rd, rs1 & rs2)
   },
   REMU: function (rd, rs1, rs2) {
 
