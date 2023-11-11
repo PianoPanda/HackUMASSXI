@@ -35,6 +35,73 @@ function compuns(a, b) {
 export const instructions = {
 
   //TODO: TEST THIS
+  // Type-R
+  SLLI: function(rd, rs1, shamt) {
+
+  },
+  SRLI: function(rd, rs1, shamt) {
+
+  },
+  SRAI: function(rd, rs1, shamt) {
+
+  },
+
+  ADD: function(rd, rs1, rs2) {
+    
+  },
+  SUB: function(rd, rs1, rs2) {
+
+  },
+  MUL: function(rd, rs1, rs2) {
+
+  },
+  SLL: function(rd, rs1, rs2) {
+
+  },
+  MULH: function(rd, rs1, rs2) {
+
+  },
+  SLT: function(rd, rs1, rs2) {
+
+  },
+  MULHSU: function(rd, rs1, rs2) {
+
+  },
+  SLTU: function(rd, rs1, rs2) {
+
+  },
+  MULHU: function(rd, rs1, rs2) {
+
+  },
+  XOR: function(rd, rs1, rs2) {
+
+  },
+  DIV: function(rd, rs1, rs2) {
+
+  },
+  SRL: function(rd, rs1, rs2) {
+
+  },
+  SRA: function(rd, rs1, rs2) {
+
+  },
+  DIVU: function(rd, rs1, rs2) {
+
+  },
+  OR: function(rd, rs1, rs2) {
+
+  },
+  REM: function(rd, rs1, rs2) {
+
+  },
+  AND: function(rd, rs1, rs2) {
+
+  },
+  REMU: function(rd, rs1, rs2) {
+
+  },
+// -------
+
   JALR: function(rd, rs1, imm) {
     const addr = rs1 + imm & ~1
     setreg(rd, getpc() + 4)

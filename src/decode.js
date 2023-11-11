@@ -65,7 +65,7 @@ export function decode(op, i) {
       switch (opcode) {
         case 0b0010011: 
         switch (funct3) {
-          case 0b001: r.SLLI(rd, rs1, rs2)//SLLI, shamt, logical left shift
+          case 0b001: r.SLLI(rd, rs1, shamt)//SLLI, shamt, logical left shift
           case 0b101:
             switch (funct7) {
               case 0b0000000: r.SRLI(rd, rs1, shamt) //SRLI, shamt, logical right shift
