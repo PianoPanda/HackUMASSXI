@@ -42,15 +42,10 @@ export function combine(data) {
 
 /**
  * Decodes a single instruction and calls the function
-<<<<<<< HEAD
- * @param {uint32} op: 32 bit assembly instruction
- * @returns {undefined}
-=======
  * @param {uint32} op - 32 bit assembly instruction
  * @param {Object} i - instructions
->>>>>>> 86ac17f (Changes structure)
  */
-function decode(op, i) {
+export function decode(op, i) {
 
   const opcode = op & 0b1111111;
 
@@ -178,58 +173,33 @@ function decode(op, i) {
         switch (opcode) {
           case 0b1100111:
             switch (func3) {
-              case 0b000: //JALR
-                i.JALR(rd, rs1, imm)
-                break
+              case 0b000: i.JALR(rd, rs1, imm); break
               default:
                 throw new Exception(f`Illegal func for instruction ${op.toString(16)}`)
             }
           case 0b0000011:
             switch (func3) {
-              case 0b000:
-                i.LB(rd, rs1, imm)
-                break
-              case 0b001:
-                i.LH(rd, rs1, imm)
-                break
-              case 0b010:
-                i.LW(rd, rs1, imm)
-                break
-              case 0b100:
-                i.LBU(rd, rs1, imm)
-                break
-              case 0b101:
-                i.LHU(rd, rs1, imm)
-                break
+              case 0b000: i.LB(rd, rs1, imm); break
+              case 0b001: i.LH(rd, rs1, imm); break
+              case 0b010: i.LW(rd, rs1, imm); break
+              case 0b100: i.LBU(rd, rs1, imm); break
+              case 0b101: i.LHU(rd, rs1, imm); break
               default:
                 throw new Exception(f`Illegal func for instruction ${op.toString(16)}`)
             }
             break
           case 0b0010011:
             switch (func3) {
-              case 0b000:
-                i.ADDI(rd, rs1, imm)
-                break
-              case 0b001:
-                i.SLTI(rd, rs1, imm)
-                break
-              case 0b011:
-                i.SLTIU(rd, rs1, imm)
-                break
-              case 0b100:
-                i.XORI(rd, rs1, imm)
-                break
-              case 0b110:
-                i.ORI(rd, rs1, imm)
-                break
-              case 0b111:
-                i.ANDI(rd, rs1, imm)
-              default:
+              case 0b000: i.ADDI(rd, rs1, imm); break
+              case 0b001: i.SLTI(rd, rs1, imm); break
+              case 0b011: i.SLTIU(rd, rs1, imm); break
+              case 0b100: i.XORI(rd, rs1, imm); break
+              case 0b110: i.ORI(rd, rs1, imm); break
+              case 0b111: i.ANDI(rd, rs1, imm); default:
                 throw new Exception(f`Illegal func for instruction ${op.toString(16)}`)
             }
-          case 0b0001111: //FENCE.I it's a noop I guess?
-            i.FENCEI()
-            break
+          //FENCE.I it's a noop I guess?
+          case 0b0001111: i.FENCEI(); break
           default:
             throw new Exception(f`Illegal opcode for instruction ${op.toString(16)}`)
         }
@@ -256,6 +226,7 @@ function decode(op, i) {
       
         switch (opcode) {
           case 0b1101111: //JAL
+            i.JAL(rd, imm)
             break
           default:
             throw new Exception(f`Illegal opcode for instruction ${op.toString(16)}`)

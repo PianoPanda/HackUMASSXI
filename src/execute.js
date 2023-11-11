@@ -20,6 +20,11 @@ function setreg(n, val) {
 function getpc() {}
 function setpc() {}
 
+/**
+ * Compares numbers as unsigned integers
+ * @param {number} a
+ * @param {number} B
+ */
 function compuns(a, b) {
   let [_a, __a, _b, __b] = [a >>> 1, a & 1, b >>> 1, b & 1]
   if (_a !== _b) return _a - _b
@@ -67,8 +72,37 @@ export const instructions = {
     setreg(rd, getreg(rs1) & imm)
   },
 
-  FENCEIL: function() {}
+  FENCEIL: function() {},
 
+  JAL: function(rd, imm) {
+    
+  },
+
+}
+
+function cpuSteps(steps) {
+  // do CSR timer stuff
+
+  // do timer interrupts if necessary
+
+  // if WFI (standby) don't execute
+  for (let step = 0; step < steps; step++) {
+
+    //TODO: handle invalid access
+    //ensure pc - offset < ram size => trap = 2
+    //ensure pc - offset & 3 == 0 => trap = 1
+
+    const op = read32(getpc())
+
+    decode(op)
+
+    //do trap stuff?
+    //do break stuff?
+    
+    setpc(getpc() + 4)
+    
+  }
+  
 }
 
 
