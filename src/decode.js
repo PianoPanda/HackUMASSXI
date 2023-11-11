@@ -196,7 +196,8 @@ function decode(op) {
             break
           case 0b0010011:
             switch (func3) {
-              case 0b000: //ADDI
+              case 0b000:
+                i.ADDI(rd, rs1, imm)
                 break
               case 0b001: //SLTI
                 break
