@@ -17,17 +17,20 @@ test("bitsfrom", () => {
 
 test("combine", () => {
     expect(decode.combine([[0, 29], [7, 3]])).toBe(7);
+    expect(decode.combine([[7, 3]])).toBe(7);
     expect(decode.combine([[3, 2], [6, 7], [3, 5], [9, 18]]))
-        .toBe(-1022623735);
+        .toBe(-1022623735>>>0);
 });
 
-const DEBUG_INSTRUCTION = {
-    JAL: (rd, imm) => [rd, imm]
-}
-
 test("decode j suite", () => {
-    // test JAL
-    decode.decode(0xF6DEFE6F, DEBUG_INSTRUCTION);
+    const DEBUG_JAL = {
+        JAL: (rd, imm) => {
+            expect(rd).toBe(28);
+            expect(imm>>>0).toBe(0xFFFEFF6C);
+        }
+    };
+    // test JAL t3, 0
+    decode.decode(0xF6DEFE6F, DEBUG_JAL);
 });
 
 const wantparams = (val) => (...a) => expect(a).toEqual(val)

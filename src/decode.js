@@ -35,9 +35,9 @@ export function combine(data) {
   for (const [bits, len] of data) {
     ret |= ((bits & (-1 >>> 32 - len)) << (32 - (count + len)));
     count += len;
-  } 
-  if (count != 32) throw new Error("Bits must fill uint32 exactly.");
-  return ret;
+  }
+  // if (count != 32) throw new Error("Bits must fill uint32 exactly.");
+  return ret >>> 32 - count;
 }
 
 function swap32(val) {
