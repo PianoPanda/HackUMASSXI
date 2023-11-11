@@ -25,8 +25,9 @@ test("combine", () => {
 const wantparams = (val) => (...a) => expect(a).toEqual(val)
 
 test("decode j suite", () => {
-    // test JAL t3, 0
+    // test JAL 0, _start
     decode.decode(0x6f000000, { JAL: wantparams([0, 0x0>>0]) });
+
 });
 test("decode r suite", () => {
     decode.decode(0x33058500, { ADD: wantparams([10, 10, 8]) })
