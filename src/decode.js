@@ -40,12 +40,20 @@ export function combine(data) {
   return ret;
 }
 
+function swap32(val) {
+  return ((val & 0xFF) << 24)
+    | ((val & 0xFF00) << 8)
+    | ((val >> 8) & 0xFF00)
+    | ((val >> 24) & 0xFF);
+}
+
 /**
  * Decodes a single instruction and calls the function
  * @param {uint32} op - 32 bit assembly instruction
  * @param {Object} i - instructions
  */
 export function decode(op, i) {
+  op = swap32(op)
 
   const opcode = op & 0b1111111;
 
@@ -66,110 +74,110 @@ export function decode(op, i) {
         switch (opcode) {
           case 0b0010011: 
             switch (funct3) {
-              case 0b001: r.SLLI(rd, rs1, shamt); break
+              case 0b001: i.SLLI(rd, rs1, shamt); break
               case 0b101:
                 switch (funct7) {
-                  case 0b0000000: r.SRLI(rd, rs1, shamt); break
-                  case 0b0100000: r.SRAI(rd, rs1, shamt); break
+                  case 0b0000000: i.SRLI(rd, rs1, shamt); break
+                  case 0b0100000: i.SRAI(rd, rs1, shamt); break
                   default:
-                    throw new Exception(f`SRLI or SRAI wrong ${op.toString(16)}`)
+                    throw new Error(f`SRLI or SRAI wrong ${op.toString(16)}`)
                 }
                 break
               default: 
-                throw new Exception(f`Illegal func for instruction ${op.toString(16)}`)
+                throw new Error(f`Illegal func for instruction ${op.toString(16)}`)
             }
             break;
           case 0b0110011:
             switch (funct3) {
               case 0b000:
                 switch (funct7) {
-                  case 0b0000000: r.ADD(rd, rs1, rs2); break
-                  case 0b0100000: r.SUB(rd, rs1, rs2); break
-                  case 0b0000001: r.MUL(rd, rs1, rs2); break
+                  case 0b0000000: i.ADD(rd, rs1, rs2); break
+                  case 0b0100000: i.SUB(rd, rs1, rs2); break
+                  case 0b0000001: i.MUL(rd, rs1, rs2); break
                   default:
-                    throw new Exception(f`ADD or SUB or MUL wrong ${op.toString(16)}`)
+                    throw new Error(f`ADD or SUB or MUL wrong ${op.toString(16)}`)
                 }
                 break
               case 0b001:
                 switch (funct7) {
-                  case 0b0000000: r.SLL(rd, rs1, rs2); break
-                  case 0b0000001: r.MULH(rd, rs1, rs2); break
+                  case 0b0000000: i.SLL(rd, rs1, rs2); break
+                  case 0b0000001: i.MULH(rd, rs1, rs2); break
                   default:
-                    throw new Exception(f`SLL or MULH wrong ${op.toString(16)}`)
+                    throw new Error(f`SLL or MULH wrong ${op.toString(16)}`)
                 }
                 break
               case 0b010: 
                 switch (funct7) {
-                  case 0b0000000: r.SLT(rd, rs1, rs2); break
-                  case 0b0000001: r.MULHSU(rd, rs1, rs2); break
+                  case 0b0000000: i.SLT(rd, rs1, rs2); break
+                  case 0b0000001: i.MULHSU(rd, rs1, rs2); break
                   default:
-                    throw new Exception(f`SLT or MULHSU wrong ${op.toString(16)}`)
+                    throw new Error(f`SLT or MULHSU wrong ${op.toString(16)}`)
                 }
                 break
               case 0b011: 
                 switch (funct7) {
-                  case 0b0000000: r.SLTU(rd, rs1, rs2); break
-                  case 0b0000001: r.MULHU(rd, rs1, rs2); break
+                  case 0b0000000: i.SLTU(rd, rs1, rs2); break
+                  case 0b0000001: i.MULHU(rd, rs1, rs2); break
                   default:
-                    throw new Exception(f`SLTU or MULHU wrong ${op.toString(16)}`)
+                    throw new Error(f`SLTU or MULHU wrong ${op.toString(16)}`)
                 }
                 break
               case 0b100:
                 switch (funct7) {
-                  case 0b0000000: r.XOR(rd, rs1, rs2); break
-                  case 0b0000001: r.DIV(rd, rs1, rs2); break
+                  case 0b0000000: i.XOR(rd, rs1, rs2); break
+                  case 0b0000001: i.DIV(rd, rs1, rs2); break
                   default:
-                    throw new Exception(f`XOR or DIV wrong ${op.toString(16)}`)
+                    throw new Error(f`XOR or DIV wrong ${op.toString(16)}`)
                 }
                 break
               case 0b101:
                 switch (funct7) {
-                  case 0b0000000: r.SRL(rd, rs1, rs2); break
-                  case 0b0100000: r.SRA(rd, rs1, rs2); break
-                  case 0b0000001: r.DIVU(rd, rs1, rs2); break
+                  case 0b0000000: i.SRL(rd, rs1, rs2); break
+                  case 0b0100000: i.SRA(rd, rs1, rs2); break
+                  case 0b0000001: i.DIVU(rd, rs1, rs2); break
                   default:
-                    throw new Exception(f`SRL or SRA or DIVU wrong ${op.toString(16)}`)
+                    throw new Error(f`SRL or SRA or DIVU wrong ${op.toString(16)}`)
                 }
                 break
               case 0b110:
                 switch (funct7) {
-                  case 0b0000000: r.OR(rd, rs1, rs2); break
-                  case 0b0000001: r.REM(rd, rs1, rs2); break
+                  case 0b0000000: i.OR(rd, rs1, rs2); break
+                  case 0b0000001: i.REM(rd, rs1, rs2); break
                   default: 
-                    throw new Exception(f`OR or REM wrong ${op.toString(16)}`)
+                    throw new Error(f`OR or REM wrong ${op.toString(16)}`)
                 }
                 break
               case 0b111:
                 switch (funct7) {
-                  case 0b0000000: r.AND(rd, rs1, rs2); break
-                  case 0b0000001: r.REMU(rd, rs1, rs2); break
+                  case 0b0000000: i.AND(rd, rs1, rs2); break
+                  case 0b0000001: i.REMU(rd, rs1, rs2); break
                   default:
-                    throw new Exception(f`AND or REMU wrong ${op.toString(16)}`)
+                    throw new Error(f`AND or REMU wrong ${op.toString(16)}`)
                 }
                 break
               default:
-                throw new Exception(f`0b0110011 stuff ${op.toString(16)}`)
+                throw new Error(f`0b0110011 stuff ${op.toString(16)}`)
             }
             break;
           case 0b0101111: 
             switch(funct7A) {
-              case 0b00010: r.LRW(rd, rs1, rl, aq); break //rs2 is 00000
-              case 0b00011: r.SCW(rd, rs1, rs2, rl, aq); break
-              case 0b00001: r.AMOSWAPW(rd, rs1, rs2, rl, aq); break
-              case 0b00000: r.AMOADDW(rd, rs1, rs2, rl, aq); break
-              case 0b00100: r.AMOXORW(rd, rs1, rs2, rl, aq); break
-              case 0b01100: r.AMOANDW(rd, rs1, rs2, rl, aq); break
-              case 0b01000: r.AMOORW(rd, rs1, rs2, rl, aq); break
-              case 0b10000: r.AMOMINW(rd, rs1, rs2, rl, aq); break
-              case 0b10100: r.AMOMAXW(rd, rs1, rs2, rl, aq); break
-              case 0b11000: r.AMOMINUW(rd, rs1, rs2, rl, aq); break
-              case 0b11100: r.AMOMAXUW(rd, rs1, rs2, rl, aq); break
+              case 0b00010: i.LRW(rd, rs1, rl, aq); break //rs2 is 00000
+              case 0b00011: i.SCW(rd, rs1, rs2, rl, aq); break
+              case 0b00001: i.AMOSWAPW(rd, rs1, rs2, rl, aq); break
+              case 0b00000: i.AMOADDW(rd, rs1, rs2, rl, aq); break
+              case 0b00100: i.AMOXORW(rd, rs1, rs2, rl, aq); break
+              case 0b01100: i.AMOANDW(rd, rs1, rs2, rl, aq); break
+              case 0b01000: i.AMOORW(rd, rs1, rs2, rl, aq); break
+              case 0b10000: i.AMOMINW(rd, rs1, rs2, rl, aq); break
+              case 0b10100: i.AMOMAXW(rd, rs1, rs2, rl, aq); break
+              case 0b11000: i.AMOMINUW(rd, rs1, rs2, rl, aq); break
+              case 0b11100: i.AMOMAXUW(rd, rs1, rs2, rl, aq); break
               default:
-                throw new Exception(f`illegal RV32A extension instructions ${op.toString(16)}`)
+                throw new Error(f`illegal RV32A extension instructions ${op.toString(16)}`)
             }
             break;
           default: 
-            throw new Exception(f`illegal type R stuff ${op.toString(16)}`) 
+            throw new Error(f`illegal type R stuff ${op.toString(16)}`) 
         }
       }
       break;
@@ -185,7 +193,7 @@ export function decode(op, i) {
             switch (func3) {
               case 0b000: i.JALR(rd, rs1, imm); break
               default:
-                throw new Exception(f`Illegal func for instruction ${op.toString(16)}`)
+                throw new Error(f`Illegal func for instruction ${op.toString(16)}`)
             }
           case 0b0000011:
             switch (func3) {
@@ -195,7 +203,7 @@ export function decode(op, i) {
               case 0b100: i.LBU(rd, rs1, imm); break
               case 0b101: i.LHU(rd, rs1, imm); break
               default:
-                throw new Exception(f`Illegal func for instruction ${op.toString(16)}`)
+                throw new Error(f`Illegal func for instruction ${op.toString(16)}`)
             }
             break
           case 0b0010011:
@@ -206,7 +214,7 @@ export function decode(op, i) {
               case 0b100: i.XORI(rd, rs1, imm); break
               case 0b110: i.ORI(rd, rs1, imm); break
               case 0b111: i.ANDI(rd, rs1, imm); default:
-                throw new Exception(f`Illegal func for instruction ${op.toString(16)}`)
+                throw new Error(f`Illegal func for instruction ${op.toString(16)}`)
             }
           //FENCE.I it's a noop I guess?
           case 0b0001111: i.FENCEI(); break
@@ -219,11 +227,11 @@ export function decode(op, i) {
               case 0b110: i.CSRRSI(rd, rs1, imm); break
               case 0b111: i.CSRRCI(rd, rs1, imm); break
               default:
-                throw new Exception(`Illegal func for instruction ${op.toString(16)}`)
+                throw new Error(`Illegal func for instruction ${op.toString(16)}`)
             }
           }
           default:
-            throw new Exception(`Illegal opcode for instruction ${op.toString(16)}`)
+            throw new Error(`Illegal opcode for instruction ${op.toString(16)}`)
         }
       }
       break;
@@ -235,7 +243,7 @@ export function decode(op, i) {
         const rs2 = bitsfrom(op, 20, 5)
         const imm_5_11 = bitsfrom(op, 25, 7)
 
-        const imm = combine([imm_0_4, 5], [imm_5_11, 7])
+        const imm = combine([[imm_0_4, 5], [imm_5_11, 7]])
 
         switch (opcode) {
           case 0b0100011:
@@ -244,11 +252,11 @@ export function decode(op, i) {
               case 0b001: i.SH(rs1, rs2, imm); break
               case 0b010: i.SW(rs1, rs2, imm); break
               default:
-                throw new Exception(`Illegal func for instruction ${op.toString(16)}`)
+                throw new Error(`Illegal func for instruction ${op.toString(16)}`)
             }
             break
           default:
-            throw new Exception(`Illegal opcode for instruction ${op.toString(16)}`)
+            throw new Error(`Illegal opcode for instruction ${op.toString(16)}`)
         }
       }
       break;
@@ -274,11 +282,11 @@ export function decode(op, i) {
               case 0b110: i.BLTU(rs1, rs2, imm); break
               case 0b111: i.BGEU(rs1, rs2, imm); break
               default:
-                throw new Exception(`Illegal func for instruction ${op.toString(16)}`)
+                throw new Error(`Illegal func for instruction ${op.toString(16)}`)
             }   
             break
           default:
-            throw new Exception(`Illegal opcode for instruction ${op.toString(16)}`)
+            throw new Error(`Illegal opcode for instruction ${op.toString(16)}`)
         }
       }
       break;
@@ -298,7 +306,7 @@ export function decode(op, i) {
         switch (opcode) {
           case 0b1101111: i.JAL(rd, imm); break
           default:
-            throw new Exception(`Illegal opcode for instruction ${op.toString(16)}`)
+            throw new Error(`Illegal opcode for instruction ${op.toString(16)}`)
         }
       }
       break;
@@ -313,7 +321,7 @@ export function decode(op, i) {
             const pred = bitsfrom(op, 24, 4)
             const fm = bitsfrom(op, 28, 4)
 
-            if (funct3) throw new Exception(`Illegal funct3 for instruction ${op.toString(16)}`)
+            if (funct3) throw new Error(`Illegal funct3 for instruction ${op.toString(16)}`)
             else if (!rd && !rs1 && succ == 0b0011 && pred == 0b0011 && fm == 0b1000) i.FENCETSO()
             else if (!rd && !rs1 && succ == 0b0000 && pred == 0b0001 && fm == 0b0000) i.PAUSE()
             else i.FENCE(rd, rs1, succ, pred, fm)
@@ -324,15 +332,15 @@ export function decode(op, i) {
             case 115: i.ECALL(); break
             case 1048691: i.EBREAK(); break
             default:
-              throw new Exception(`Illegal instruction`)
+              throw new Error(`Illegal instruction`)
           }
           break
         default:
-          throw new Exception(`Illegal opcode for instruction ${op.toString(16)}`)
+          throw new Error(`Illegal opcode for instruction ${op.toString(16)}`)
       }
       break;
     default:
-      throw new Exception(`Illegal type for instruction ${op.toString(16)}`) 
+      throw new Error(`Illegal type for instruction ${op.toString(16)}`) 
   }
 }
 
