@@ -176,36 +176,47 @@ export const instructions = {
   SCW: function (rd, rs1, rs2, rl, aq) {
 
   },
+  // Maxwell working on this
   AMOSWAPW: function (rd, rs1, rs2, rl, aq) {
 
   },
+  // Maxwell working on this
   AMOADDW: function (rd, rs1, rs2, rl, aq) {
 
   },
+  // Maxwell working on this
   AMOXORW: function (rd, rs1, rs2, rl, aq) {
 
   },
+  // Maxwell working on this
   AMOANDW: function (rd, rs1, rs2, rl, aq) {
 
   },
+  // Maxwell working on this
   AMOORW: function (rd, rs1, rs2, rl, aq) {
 
   },
+  // Maxwell working on this
   AMOMINW: function (rd, rs1, rs2, rl, aq) {
 
   },
+  // Maxwell working on this
   AMOMAXW: function (rd, rs1, rs2, rl, aq) {
 
   },
+  // Maxwell working on this
   AMOMINUW: function (rd, rs1, rs2, rl, aq) {
 
   },
+  // Maxwell working on this
   AMOMAXW: function (rd, rs1, rs2, rl, aq) {
 
   },
+  // Maxwell working on this
   AMOMINUW: function (rd, rs1, rs2, rl, aq) {
 
   },
+  // Maxwell working on this
   AMOMAXUW: function (rd, rs1, rs2, rl, aq) {
 
   },
