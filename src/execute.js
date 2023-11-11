@@ -3,33 +3,47 @@ import { compuns } from "./util.js"
 
 const registers = Uint32Array(32).fill(0);
 const csrData = {
+  // Trap handler setup
   [0x300]: 0x00000000, // MRW: mstatus [refer to privileged: 3.1.6 Machine Status Registers for info]
   [0x301]: 0x40401101, // MRW: misa [why is this read/write????? this is a constant representing enabled RISC-V extensions]
   [0x304]: 0x00000000, // MRW: mie [bit i represents if interrupt i is enabled]
   [0x305]: 0x00000000, // MRW: mtvec [first 30 bits represent base address, last 2 bits represent Direct or Vectored]
 
+  // Trap stuff
   [0x340]: 0x00000000, // MRW: mscratch [Machine mode only scratch register]
-  [0x341]: 0x00000000, // MRW: mepc 
-  [0x342]: 0x00000000, // MRW: mcause
-  [0x343]: 0x00000000, // MRW: mtval
-  [0x344]: 0x00000000, // MRW: mip [bit i represents if interrupt i is pending???? TODO]
+  [0x341]: 0x00000000, // MRW: mepc [When an interrupt happens, the old PC is loaded here]
+  [0x342]: 0x00000000, // MRW: mcause [First bit is whether an interrupt caused it, next bits are a cause of an exception]
+  [0x343]: 0x00000000, // MRW: mtval [Page fault address]
+  [0x344]: 0x00000000, // MRW: mip [bit i represents if interrupt i is currently enqueued]
 
+  // Cycle counter
   [0xC00]: 0x00000000, // URO: cycle [This is uptime in cycles]
 
+  // Vendor ID
   [0xF11]: 0xff0ff0ff, // MRO: mvendorid [Extra Credit: make this the funny number]
 }
 
 function readCSR(csr) {
   if (!csr in csrData) throw new Error(`Attempted to read CSR 0x${toHex(csr, 3)}, which is not implemented`)
-  return csrData[csr];
-  //TODO do side effects
+  //TODO implement all side effects
+  switch (csr) {
+    default:
+      return csrData[csr];
+  }
 }
 
 function writeCSR(csr, value) {
   if (!csr in csrData) throw new Error(`Attempted to write CSR 0x${toHex(csr, 3)}, which is not implemented`)
   const changedBits = csrData[csr] ^ value; //TODO deal with permissions
-  csrData[csr] = value;
-  //TODO do side effects
+  //TODO implement all side effects
+  switch (csr) {
+    case 0xC00:
+      return;
+    case 0xF11:
+      return;
+    default:
+      csrData[csr] = value;
+  }
 }
 
 /**
@@ -67,24 +81,24 @@ export const instructions = {
 
   },
 
-  ADD: function(rd, rs1, rs2) {
+  ADD: function (rd, rs1, rs2) {
     setreg(rd, getreg(rs1) + getreg(rs2))
   },
-  SUB: function(rd, rs1, rs2) {
+  SUB: function (rd, rs1, rs2) {
     setreg(rd, getreg(rs2) - getreg(rs1))
   },
-  MUL: function(rd, rs1, rs2) {
+  MUL: function (rd, rs1, rs2) {
     setreg(rd, BigInt(getreg(rs1)) * BigInt(getreg(rs2)))
   },
-  SLL: function(rd, rs1, rs2) {
+  SLL: function (rd, rs1, rs2) {
 
   },
-  MULH: function(rd, rs1, rs2) { //rs1 and rs2 are signed
+  MULH: function (rd, rs1, rs2) { //rs1 and rs2 are signed
     setreg(rd, {
-      return: (BigInt(Int32Array([getreg(rs1)])) * BigInt(Int32Array([getreg(rs2)]))) >> BigInt(32) 
+      return: (BigInt(Int32Array([getreg(rs1)])) * BigInt(Int32Array([getreg(rs2)]))) >> BigInt(32)
     })
   },
-  SLT: function(rd, rs1, rs2) {
+  SLT: function (rd, rs1, rs2) {
 
   },
   MULHSU: function(rd, rs1, rs2) { //rs1 signed, rs2 unsigned
@@ -96,7 +110,7 @@ export const instructions = {
   SLTU: function (rd, rs1, rs2) {
 
   },
-  MULHU: function(rd, rs1, rs2) {
+  MULHU: function (rd, rs1, rs2) {
     setreg(rd, BigInt(getreg(rs1)) * BigInt(getreg(rs2))) >> BigInt(32)
   },
   XOR: function (rd, rs1, rs2) {
@@ -285,6 +299,7 @@ function cpuSteps(steps) {
     //do break stuff?
 
     setpc(getpc() + 4)
+    csrData[0xC00]++; //Increment cycle counter
 
   }
 
