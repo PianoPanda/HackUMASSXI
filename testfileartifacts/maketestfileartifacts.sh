@@ -1,4 +1,4 @@
-# ./configure --prefix=/opt/riscv --with-arch=rv32iam --disable-linux
+# ./configure --prefix=/opt/riscv --with-arch=rv32iamg --disable-linux
 # make -j $(nproc)
 
 riscv32-unknown-elf-gcc -O1 -nostartfiles -S test.c -o test.s
