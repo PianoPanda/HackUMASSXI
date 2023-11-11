@@ -311,6 +311,7 @@ function gettype(opcode) {
     case 0b0010011:
     case 0b0001111:
     case 0b1110011:
+    case 0b0101111:
       return TYPES.R;
     //I-type
     case 0b1100111:
