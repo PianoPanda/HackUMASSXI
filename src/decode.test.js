@@ -20,3 +20,13 @@ test("combine", () => {
     expect(decode.combine([[3, 2], [6, 7], [3, 5], [9, 18]]))
         .toBe(-1022623735);
 });
+
+const DEBUG_INSTRUCTION = {
+    JAL: (rd, imm) => [rd, imm]
+}
+
+test("decode j suite", () => {
+    // test JAL
+    decode.decode(0xF6DEFE6F, DEBUG_INSTRUCTION);
+});
+

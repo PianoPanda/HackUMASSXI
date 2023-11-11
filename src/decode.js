@@ -53,7 +53,6 @@ export function decode(op, i) {
 
   //TODO: fill out 
   switch (type) {
-
     case TYPES.R:
       //TODO:
       {const rd = bitsfrom(op, 7, 5);
@@ -330,7 +329,6 @@ export function decode(op, i) {
 }
 
 function gettype(opcode) {
-
   switch (opcode) {
     //R-type
     case 0b0110011:
