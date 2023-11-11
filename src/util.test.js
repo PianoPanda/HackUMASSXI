@@ -1,4 +1,4 @@
-import { test } from "bun:test";
+import { expect, test } from "bun:test";
 import { format32 } from "./util";
 import assert from "assert";
 
@@ -19,5 +19,5 @@ test("format32: 0x1_ABCD_1234", () => {
 });
 
 test("format32: 0x1_ABCD_1234 * 0x1_ABCD_1234", () => {
-    assert(format32(0x1_ABCD_1234 * 0x1_ABCD_1234) === format32(0xABCD_1234 * 0xABCD_1234));
+    expect(() => format32(0x1_ABCD_1234 * 0x1_ABCD_1234)).toThrow();
 });

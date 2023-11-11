@@ -1,4 +1,5 @@
-import { getreg, setreg, instructions } from "./execute.js"
+import assert from "assert";
+import { getreg, setreg, instructions, setpc } from "./execute.js"
 import { test } from "bun:test";
 
 const testExecutable = new Uint8Array(
@@ -15,10 +16,78 @@ const testExecutable = new Uint8Array(
 );
 //entry at pc=0x00
 //should return (a5 = 0)
+test("ADD: 1 + 2", () => {
+  setreg(1, 1);
+  setreg(2, 2);
+  instructions.ADD(3, 1, 2);
+  assert(getreg(3) === 3)
+})
 
-test("MUL", () => {
+test("ADD: 1 + (-2)", () => {
+  setreg(1, 1)
+  setreg(2, 0xFFFF_FFFE)
+  instructions.ADD(3, 1, 2);
+  assert(getreg(3) === 0xFFFF_FFFF) //todo
+})
+
+test("ADD: (-1) + 2", () => {
+  setreg(1, 0xFFFF_FFFF)
+  setreg(2, 2)
+  instructions.ADD(3, 1, 2);
+  assert(getreg(3), 1) //todo
+})
+
+test("ADD: (-1) + (-2)", () => {
+  setreg(1, 0xFFFF_FFFF)
+  setreg(2, 0xFFFF_FFFE)
+  instructions.ADD(3, 1, 2);
+  assert(getreg(3), 0xFFFF_FFFD) //todo
+})
+
+test("MUL: typical imput", () => {
   setreg(1, 4)
   setreg(2, 5)
   instructions.MUL(3, 1, 2)
-  console.log(getreg(3) == 20)
+  assert(getreg(3) == 20)
+})
+
+test("MUL: large values", () => {
+  setreg(1, 0xFFFF_FFFF)
+  setreg(2, 0xFFFF_FFFF)
+  instructions.MUL(3, 1, 2)
+  assert(getreg(3) === 1)
+})
+
+test("LUI: typical input", () => {
+  instructions.LUI(1, 1)
+  assert(getreg(1) === 0x0000_1000)
+})
+
+test("LUI: high input", () => {
+  instructions.LUI(1, 0x000F_FFFF)
+  assert(getreg(1) === 0xFFFF_F000)
+})
+
+test("AUIPC: low pc, low imm", () => {
+  setpc(0x0000_0ABC)
+  instructions.AUIPC(1, 1)
+  assert(getreg(1) === 0x0000_1ABC)
+})
+
+test("AUIPC: low pc, high imm", () => {
+  setpc(0x0000_0ABC)
+  instructions.AUIPC(1, 0x000F_FFFF)
+  assert(getreg(1) === 0xFFFF_FABC)
+})
+
+test("AUIPC: high pc, low imm", () => {
+  setpc(0xABCD_1234)
+  instructions.AUIPC(1, 0x0000_0001)
+  assert(getreg(1) === 0xABCD_2234)
+})
+
+test("AUIPC: high pc, high imm", () => {
+  setpc(0xABCD_1234)
+  instructions.AUIPC(1, 0x000F_FFFF)
+  assert(getreg(1) === 0xABCD_0234)
 })
