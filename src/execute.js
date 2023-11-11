@@ -1,12 +1,31 @@
 import { read32, write32 } from "./ram.js"
 import { compuns } from "./util.js"
 
+const registers = Uint32Array(32).fill(0);
+const csr = {
+  [0x300]: 0x00000000, // MRW: mstatus [refer to privileged: 3.1.6 Machine Status Registers for info]
+  [0x301]: 0x40401101, // MRW: misa [why is this read/write????? this is a constant representing enabled RISC-V extensions]
+  [0x304]: 0x00000000, // MRW: mie [bit i represents if interrupt i is enabled]
+  [0x305]: 0x00000000, // MRW: mtvec [first 30 bits represent base address, last 2 bits represent Direct or Vectored]
+
+  [0x340]: 0x00000000, // MRW: mscratch [Machine mode only scratch register]
+  [0x341]: 0x00000000, // MRW: mepc 
+  [0x342]: 0x00000000, // MRW: mcause
+  [0x343]: 0x00000000, // MRW: mtval
+  [0x344]: 0x00000000, // MRW: mip [bit i represents if interrupt i is pending???? TODO]
+
+  [0xC00]: 0x00000000, // URO: cycle [This is uptime in cycles]
+
+  [0xF11]: 0xff0ff0ff, // MRO: mvendorid [Extra Credit: make this the funny number]
+}
+
 /**
  * Gets the value in a register
  * @param {number} n
+ * @returns {number}
  */
 function getreg(n) {
-  
+  return registers[n]
 }
 
 /**
@@ -15,7 +34,7 @@ function getreg(n) {
  * @param {uint32} val - what to set it to
  */
 function setreg(n, val) {
-  
+  if(n !== 0) registers[n] = val & 0xffffffff;
 }
 
 function getpc() {}
