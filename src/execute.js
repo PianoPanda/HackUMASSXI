@@ -109,20 +109,31 @@ export const instructions = {
   },
 
   //TODO: TEST THESE
-  LB: function(_, rs1, _) {
-    setreg(rs1, read32(getreg(rs1)) << 24 >> 24)
+  LB: function(rd, rs1, imm) {
+    setreg(rd, read32(getreg(rs1) + imm) << 24 >> 24)
   },
-  LH: function(_, rs1, _) {
-    setreg(rs1, read32(getreg(rs1)) << 16 >> 16)
+  LH: function(rd, rs1, imm) {
+    setreg(rd, read32(getreg(rs1) + imm) << 16 >> 16)
   },
-  LW: function(_, rs1, _) {
-    setreg(rs1, read32(getreg(rs1)))
+  LW: function(rd, rs1, imm) {
+    setreg(rd, read32(getreg(rs1) + imm))
   },
-  LBU: function(_, rs1, _) {
-    setreg(rs1, read32(getreg(rs1)) & 0xff)
+  LBU: function(rd, rs1, imm) {
+    setreg(rd, read32(getreg(rs1) + imm) & 0xff)
   },
-  LHU: function(_, rs1, _) {
-    setreg(rs1, read32(getreg(rs1)) & 0xffff)
+  LHU: function(rd, rs1, imm) {
+    setreg(rd, read32(getreg(rs1) + imm) & 0xffff)
+  },
+
+  //TODO: TEST THESE
+  SB: function(rs1, rs2, imm) {
+    write32(getreg(rs1) + imm, rs2 << 24 >> 24)
+  },
+  SH: function(rs1, rs2, imm) {
+    write32(getreg(rs1) + imm, rs2 << 16 >> 16)
+  },
+  SW: function(rs1, rs2, imm) {
+    write32(getreg(rs1) + imm, rs2)
   },
 
   ADDI: function(rd, rs1, imm) {
@@ -159,9 +170,8 @@ export const instructions = {
   CSRRSI: function(rd, uimm, csr) {},
   CSRRCI: function(rd, uimm, csr) {},
 
-  SB: function(rs1, rs2, imm) {},
-  SH: function(rs1, rs2, imm) {},
-  SW: function(rs1, rs2, imm) {},
+  ECALL: function() {},
+  EBREAK: function() {},
 
 }
 
@@ -179,7 +189,7 @@ function cpuSteps(steps) {
 
     const op = read32(getpc())
 
-    decode(op)
+    decode(op, instructions)
 
     //do trap stuff?
     //do break stuff?

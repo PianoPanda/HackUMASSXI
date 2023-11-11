@@ -211,11 +211,11 @@ export function decode(op, i) {
               case 0b001: i.SH(rs1, rs2, imm); break
               case 0b010: i.SW(rs1, rs2, imm); break
               default:
-                throw new Exception("")
+                throw new Exception(`Illegal func for instruction ${op.toString(16)}`)
             }
             break
           default:
-            throw new Exception("")
+            throw new Exception(`Illegal opcode for instruction ${op.toString(16)}`)
         }
       }
       break;
@@ -265,15 +265,41 @@ export function decode(op, i) {
         switch (opcode) {
           case 0b1101111: i.JAL(rd, imm); break
           default:
-            throw new Exception(f`Illegal opcode for instruction ${op.toString(16)}`)
+            throw new Exception(`Illegal opcode for instruction ${op.toString(16)}`)
         }
       }
       break;
     case TYPES.OTHER:
-      //TODO: fill out
+      switch (opcode) {
+        case 0b0001111:
+          {
+            const rd = bitsfrom(op, 7, 5)
+            const funct3 = bitsfrom(op, 12, 3)
+            const rs1 = bitsfrom(op, 15, 5)
+            const succ = bitsfrom(op, 20, 4)
+            const pred = bitsfrom(op, 24, 4)
+            const fm = bitsfrom(op, 28, 4)
+
+            if (funct3) throw new Exception(`Illegal funct3 for instruction ${op.toString(16)}`)
+            else if (!rd && !rs1 && succ == 0b0011 && pred == 0b0011 && fm == 0b1000) i.FENCETSO()
+            else if (!rd && !rs1 && succ == 0b0000 && pred == 0b0001 && fm == 0b0000) i.PAUSE()
+            else i.FENCE(rd, rs1, succ, pred, fm)
+          }
+          break
+        case 0b1110011:
+          switch (op) {
+            case 115: i.ECALL(); break
+            case 1048691: i.EBREAK(); break
+            default:
+              throw new Exception(`Illegal instruction`)
+          }
+          break
+        default:
+          throw new Exception(`Illegal opcode for instruction ${op.toString(16)}`)
+      }
       break;
     default:
-      throw new Exception(f`Illegal type for instruction ${op.toString(16)}`) 
+      throw new Exception(`Illegal type for instruction ${op.toString(16)}`) 
   }
 }
 
@@ -285,6 +311,7 @@ function gettype(opcode) {
     case 0b0010011:
     case 0b0001111:
     case 0b1110011:
+    case 0b0101111:
       return TYPES.R;
     //I-type
     case 0b1100111:
