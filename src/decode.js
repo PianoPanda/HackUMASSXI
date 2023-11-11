@@ -37,14 +37,101 @@ function decode(op) {
       
       switch (opcode) {
         case 0b0010011: 
-        switch (func) {
-          case 0b001:
+        switch (funct3) {
+          case 0b001: //SLLI, shamt, logical left shift
             //TODO:
-            //SLLI, shamt, 
+            
+            funct7 = 0b0000000
             break
-          case 0b
+          case 0b101: // SRLI, shamt, logical right shift 
+            //TODO:
+            
+            funct7 = 0b0000000
+          case 0b101: //SRAI, shamt, arithmetic right shift
+            //TODO:
+            funct7 = 0b0100000
           default: 
             throw new Exception(f`Illegal func for instruction ${op.toString(16)}`)
+        }
+        case 0b0110011:
+        switch (funct3) {
+          case 0b000: //ADD or SUB
+            switch (funct7) {
+              case 0b0000000: //ADD
+                //TODO:
+              case 0b0100000: //SUB
+                //TODO:
+              case 0b0000001: //MUL
+                //TODO:
+              default:
+                throw new Exception(f`ADD or SUB or MUL wrong ${op.toString(16)}`)
+            }
+          case 0b001: //SLL
+            switch (funct7) {
+              case 0b0000000: //SLL
+                //TODO:
+              case 0b0000001: //MULH
+                //TODO:
+              default:
+                throw new Exception(f`SLL or MULH wrong ${op.toString(16)}`)
+            }
+          case 0b010: 
+            switch (funct7) {
+              case 0b0000000: //SLT
+                //TODO: 
+              case 0b0000001: //MULHSU
+                //TODO:
+              default:
+                throw new Exception(f`SLT or MULHSU wrong ${op.toString(16)}`)
+            }
+          case 0b011: 
+            switch (funct7) {
+              case 0b0000000: //SLTU
+                //TODO:
+              case 0b0000001: //MULHU
+                //TODO:
+              default:
+                throw new Exception(f`SLTU or MULHU wrong ${op.toString(16)}`)
+            }
+          case 0b100: //XOR
+            switch (funct7) {
+              case 0b0000000: //XOR
+                //TODO:
+              case 0b0000001: //DIV
+                //TODO:
+              default:
+                throw new Exception(f`XOR or DIV wrong ${op.toString(16)}`)
+            }
+          case 0b101: //SRL or SRA
+            switch (funct7) {
+              case 0b0000000: //SRL
+                //TODO:
+              case 0b0100000: //SRA
+                //TODO:
+              case 0b0000001: //DIVU
+                //TODO:
+              default:
+                throw new Exception(f`SRL or SRA or DIVU wrong ${op.toString(16)}`)
+            }
+          case 0b110: //OR
+            switch (funct7) {
+              case 0b0000000: //OR
+                //TODO:
+              case 0b0000001: //REM
+                //TODO:
+              default: 
+                throw new Exception(f`OR or REM wrong ${op.toString(16)}`)
+            }
+          case 0b111: //AND
+            //TODO:
+            switch (funct7) {
+              case 0b0000000: //AND
+                //TODO:
+              case 0b0000001: //REMU
+                //TODO:
+              default:
+                throw new Exception(f`AND or REMU wrong ${op.toString(16)}`)
+            }
         }
       }
       break;
