@@ -25,7 +25,7 @@ export function bitsfrom(what, start, nbits) {
 }
 
 /**
- * Combines an array of bits of given lengths into one 32 bit num
+ * Combines an array of bits of given lengths into one 32 bit num, if undersized pad left with 0
  * @param {[uint32, number][]} data - [bits, length] 
  * @returns {uint32} - output 32 bit number
  */
