@@ -1,9 +1,7 @@
 /**
- * Use https://godbolt.org/
+ * Use https://godbolt.org/ NOTE add call main to the beginning of the asm file
  * Then https://riscvasm.lucasteske.dev/#
 */
-#include<stdio.h>
-
 //takes in positive integers only, returns a/b rounded down
 int softwareDivide(unsigned int a, unsigned int b){
     unsigned int c = 0;
@@ -17,5 +15,7 @@ int softwareDivide(unsigned int a, unsigned int b){
 int main(){
     volatile unsigned int a = 12;
     volatile unsigned int b = 4;
-    softwareDivide(a, b);
+    volatile unsigned int c;
+    c = softwareDivide(a, b);
+    return c ^ 3;
 }
