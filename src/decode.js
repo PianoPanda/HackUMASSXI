@@ -40,6 +40,11 @@ export function combine(data) {
   return ret >>> 32 - count;
 }
 
+/**
+ * swap32 - Convert uint32 from little endian to big endian
+ * @param {uint32} val 
+ * @returns {uint32}
+ */
 function swap32(val) {
   return ((val & 0xFF) << 24)
     | ((val & 0xFF00) << 8)
@@ -305,18 +310,21 @@ export function decode(op, i) {
       break;
     case TYPES.J:
       {
+        // 1 1111000110 1 11101111 11100 1101111
+        // 20    10-1  11   19-12   rd   opcode
+        // 1 11101111 1 1111000110
         const rd = bitsfrom(op, 7, 5);
         const imm_12_19 = bitsfrom(op, 12, 8);
-        const imm_11 = bitsfrom(op, 19, 1)
-        const imm_1_10 = bitsfrom(op, 20, 10)
+        const imm_11 = bitsfrom(op, 20, 1)
+        const imm_1_10 = bitsfrom(op, 21, 10)
         const imm_20 = bitsfrom(op, 31, 1)
 
-        const imm = combine([[0, 1], [imm_1_10, 10], [imm_11, 1], [imm_12_19, 8], [imm_20, 1]]) << 12 >> 12
+        const imm = combine([[imm_20, 1], [imm_12_19, 8], [imm_11, 1],[ imm_1_10, 10], [0, 1]]) << 12 >> 12;
       
         switch (opcode) {
-          case 0b1101111: i.JAL(rd, imm); break
+          case 0b1101111: i.JAL(rd, imm); break;
           default:
-            throw new Error(`Illegal opcode for instruction ${op.toString(16)}`)
+            throw new Error(`Illegal opcode for instruction ${op.toString(16)}`);
         }
       }
       break;
