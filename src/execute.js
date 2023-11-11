@@ -157,14 +157,17 @@ export const instructions = {
   OR: function (rd, rs1, rs2) {
     setreg(rd, rs1 | rs2)
   },
-  REM: function (rd, rs1, rs2) {
-
+  REM: function (rd, rs1, rs2) { // sign mirrors rs1
+    const div1 = new Int32Array([rs1])
+    const div2 = new Int32Array([rs2])
+    const remainder = div1 / Math.abs(div2)
+    setreg(rd, remainder)
   },
   AND: function (rd, rs1, rs2) {
     setreg(rd, rs1 & rs2)
   },
-  REMU: function (rd, rs1, rs2) {
-
+  REMU: function (rd, rs1, rs2) { //unsigned div for remainder
+    setreg(rd, rs1 / rs2) 
   },
 
   LRW: function (rd, rs1, rl, aq) {

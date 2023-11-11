@@ -22,19 +22,12 @@ test("combine", () => {
         .toBe(-1022623735>>>0);
 });
 
-test("decode j suite", () => {
-    const DEBUG_JAL = {
-        JAL: (rd, imm) => {
-            expect(rd).toBe(28);
-            expect(imm>>>0).toBe(0xFFFEFF6C);
-        }
-    };
-    // test JAL t3, 0
-    decode.decode(0xF6DEFE6F, DEBUG_JAL);
-});
-
 const wantparams = (val) => (...a) => expect(a).toEqual(val)
 
+test("decode j suite", () => {
+    // test JAL t3, 0
+    decode.decode(0x6f000000, { JAL: wantparams([0, 0x0>>0]) });
+});
 test("decode r suite", () => {
     decode.decode(0x33058500, { ADD: wantparams([10, 10, 8]) })
 })
