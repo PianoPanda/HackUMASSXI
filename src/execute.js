@@ -55,31 +55,35 @@ export const instructions = {
   },
 
   ADD: function(rd, rs1, rs2) {
-    setreg(rd, rs1 + rs2)
+    setreg(rd, getreg(rs1) + getreg(rs2))
   },
   SUB: function(rd, rs1, rs2) {
-    setreg(rd, rs2 - rs1)
+    setreg(rd, getreg(rs2) - getreg(rs1))
   },
   MUL: function(rd, rs1, rs2) {
-    setreg(rd, BigInt(rs1) * BigInt(rs2))
+    setreg(rd, BigInt(getreg(rs1)) * BigInt(getreg(rs2)))
   },
   SLL: function(rd, rs1, rs2) {
-    
-  },
-  MULH: function(rd, rs1, rs2) {
 
+  },
+  MULH: function(rd, rs1, rs2) { //rs1 and rs2 are signed
+    setreg(rd, {
+      return: (BigInt(Int32Array([getreg(rs1)])) * BigInt(Int32Array([getreg(rs2)]))) >> BigInt(32) 
+    })
   },
   SLT: function(rd, rs1, rs2) {
 
   },
-  MULHSU: function(rd, rs1, rs2) {
-
+  MULHSU: function(rd, rs1, rs2) { //rs1 signed, rs2 unsigned
+    setreg(rd, {
+      return: setreg(BigInt(Int32Array([getreg(rs1)])) * BigInt(getreg(rs2))) >> BigInt(32)
+      })
   },
   SLTU: function(rd, rs1, rs2) {
 
   },
   MULHU: function(rd, rs1, rs2) {
-
+    setreg(rd, BigInt(getreg(rs1)) * BigInt(getreg(rs2))) >> BigInt(32)
   },
   XOR: function(rd, rs1, rs2) {
 
