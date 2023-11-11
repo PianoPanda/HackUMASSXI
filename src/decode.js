@@ -42,10 +42,15 @@ export function combine(data) {
 
 /**
  * Decodes a single instruction and calls the function
+<<<<<<< HEAD
  * @param {uint32} op: 32 bit assembly instruction
  * @returns {undefined}
+=======
+ * @param {uint32} op - 32 bit assembly instruction
+ * @param {Object} i - instructions
+>>>>>>> 86ac17f (Changes structure)
  */
-function decode(op) {
+function decode(op, i) {
 
   const opcode = op & 0b1111111;
 
