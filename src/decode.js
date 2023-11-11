@@ -9,8 +9,24 @@ const TYPES = {
   OTHER: 6
 }
 
-function bitsfrom(what, start, bits) {
-  
+/**
+ * bitsfrom - extract bits from number: from what (start, start + nbits]
+ * @param {uint32} what
+ * @param {number} start - start bit counting from the right, high
+ * @param {number} nbits - number of bits to gather
+ */
+export function bitsfrom(what, start, nbits) {
+  if (nbits == 0) throw new Error("nbits must be > 0");
+  return (what << (32 - (nbits + start))) >>> 32 - nbits;
+}
+
+/**
+ * Combines an array of bits of given lengths into one 32 bit num
+ * @param {uint32[]} bits - bits to combine
+ * @param {uint5[]} lengths - lengths that correspond to the bits
+ */
+function combine(bits, lengths) {
+
 }
 
 
@@ -269,10 +285,3 @@ function gettype(opcode) {
 
   
 }
-
-
-
-
-
-
-
