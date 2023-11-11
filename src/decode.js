@@ -55,7 +55,7 @@ export function decode(op, i) {
   switch (type) {
 
     case TYPES.R:
-      //TODO: fill out
+      //TODO:
       {const rd = bitsfrom(op, 7, 5);
       const funct3 = bitsfrom(op, 12, 3);
       const rs1 = bitsfrom(op, 15, 5);
@@ -66,14 +66,10 @@ export function decode(op, i) {
         case 0b0010011: 
         switch (funct3) {
           case 0b001: r.SLLI(rd, rs1, rs2)//SLLI, shamt, logical left shift
-            //TODO:
-            
-            funct7 = 0b0000000
-            break
           case 0b101:
             switch (funct7) {
-              case 0b0000000: //TODO SRLI, shamt, logical right shift 
-              case ob0100000: //TODO SRAI, shamt, arithmetic right shift
+              case 0b0000000: r.SRLI(rd, rs1, shamt) //SRLI, shamt, logical right shift
+              case ob0100000: r.SRAI(rd, rs1, shamt) //SRAI, shamt, arithmetic right shift
               default:
                 throw new Exception(f`SRLI or SRAI wrong ${op.toString(16)}`)
             }
@@ -82,80 +78,61 @@ export function decode(op, i) {
         }
         case 0b0110011:
         switch (funct3) {
-          case 0b000: //ADD or SUB
+          case 0b000:
             switch (funct7) {
-              case 0b0000000: //ADD
-                //TODO:
-              case 0b0100000: //SUB
-                //TODO:
-              case 0b0000001: //MUL
-                //TODO:
+              case 0b0000000: r.ADD(rd, rs1, rs2); break
+              case 0b0100000: r.SUB(rd, rs1, rs2); break
+              case 0b0000001: r.MUL(rd, rs1, rs2); break
               default:
                 throw new Exception(f`ADD or SUB or MUL wrong ${op.toString(16)}`)
             }
-          case 0b001: //SLL
+          case 0b001:
             switch (funct7) {
-              case 0b0000000: //SLL
-                //TODO:
-              case 0b0000001: //MULH
-                //TODO:
+              case 0b0000000: r.SLL(rd, rs1, rs2); break
+              case 0b0000001: r.MULH(rd, rs1, rs2); break
               default:
                 throw new Exception(f`SLL or MULH wrong ${op.toString(16)}`)
             }
           case 0b010: 
             switch (funct7) {
-              case 0b0000000: //SLT
-                //TODO: 
-              case 0b0000001: //MULHSU
-                //TODO:
+              case 0b0000000: r.SLT(rd, rs1, rs2); break
+              case 0b0000001: r.MULHSU(rd, rs1, rs2); break
               default:
                 throw new Exception(f`SLT or MULHSU wrong ${op.toString(16)}`)
             }
           case 0b011: 
             switch (funct7) {
-              case 0b0000000: //SLTU
-                //TODO:
-              case 0b0000001: //MULHU
-                //TODO:
+              case 0b0000000: r.SLTU(rd, rs1, rs2); break
+              case 0b0000001: r.MULHU(rd, rs1, rs2); break
               default:
                 throw new Exception(f`SLTU or MULHU wrong ${op.toString(16)}`)
             }
-          case 0b100: //XOR
+          case 0b100:
             switch (funct7) {
-              case 0b0000000: //XOR
-                //TODO:
-              case 0b0000001: //DIV
-                //TODO:
+              case 0b0000000: r.XOR(rd, rs1, rs2); break
+              case 0b0000001: r.DIV(rd, rs1, rs2); break
               default:
                 throw new Exception(f`XOR or DIV wrong ${op.toString(16)}`)
             }
-          case 0b101: //SRL or SRA
+          case 0b101:
             switch (funct7) {
-              case 0b0000000: //SRL
-                //TODO:
-              case 0b0100000: //SRA
-                //TODO:
-              case 0b0000001: //DIVU
-                //TODO:
+              case 0b0000000: r.SRL(rd, rs1, rs2); break
+              case 0b0100000: r.SRA(rd, rs1, rs2); break
+              case 0b0000001: r.DIVU(rd, rs1, rs2); break
               default:
                 throw new Exception(f`SRL or SRA or DIVU wrong ${op.toString(16)}`)
             }
-          case 0b110: //OR
+          case 0b110:
             switch (funct7) {
-              case 0b0000000: //OR
-                //TODO:
-              case 0b0000001: //REM
-                //TODO:
+              case 0b0000000: r.OR(rd, rs1, rs2); break
+              case 0b0000001: r.REM(rd, rs1, rs2); break
               default: 
                 throw new Exception(f`OR or REM wrong ${op.toString(16)}`)
             }
-          case 0b111: //AND
-            //TODO:
+          case 0b111:
             switch (funct7) {
-              case 0b0000000: //AND
-                //TODO:
-              case 0b0000001: //REMU
-                //TODO:
+              case 0b0000000: r.AND(rd, rs1, rs2); break
+              case 0b0000001: r.REMU(rd, rs1, rs2); break
               default:
                 throw new Exception(f`AND or REMU wrong ${op.toString(16)}`)
             }
