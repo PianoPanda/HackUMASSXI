@@ -1,6 +1,8 @@
 import assert from "assert";
 import { getreg, setreg, instructions, setpc } from "./execute.js"
 import { test } from "bun:test";
+import { read32, write32 } from "./ram.js";
+import { toHex } from "./util.js";
 
 const testExecutable = new Uint8Array(
   new Uint32Array([
@@ -90,4 +92,133 @@ test("AUIPC: high pc, high imm", () => {
   setpc(0xABCD_1234)
   instructions.AUIPC(1, 0x000F_FFFF)
   assert(getreg(1) === 0xABCD_0234)
+})
+
+// r1 -> 0xDEADDEAD
+// r2 =  0xCAFECAFE
+// The AMO tests are based on the following interpretation:
+// r1 is a pointer, while r2 is a number
+// Each AMO operation is atomic(obviously)
+// First, the memory stored at r1 is loaded into rd
+// Secondly, the memory stored at r1 is operated with r2
+// Lastly, the result is stored at r1
+test("AMOSWAPW", () => {
+  write32(100, 0xDEADDEAD);
+  setreg(1, 100);
+  setreg(2, 0xCAFECAFE)
+  instructions.AMOSWAPW(3, 1, 2, 0, 0);
+  assert(read32(100) === (0xCAFECAFE | 0));
+  assert(getreg(1) === 100);
+  assert(getreg(2) === 0xDEADDEAD);
+  assert(getreg(3) === 0xDEADDEAD);
+})
+
+test("AMOADDW", () => {
+  write32(100, 0xDEADDEAD);
+  setreg(1, 100);
+  setreg(2, 0xCAFECAFE)
+  instructions.AMOADDW(3, 1, 2, 0, 0);
+  assert(read32(100) === (0xA9ACA9AB | 0));
+  assert(getreg(1) === 100);
+  assert(getreg(2) === 0xCAFECAFE);
+  assert(getreg(3) === 0xDEADDEAD);
+})
+
+test("AMOXORW", () => {
+  write32(100, 0xDEADDEAD);
+  setreg(1, 100);
+  setreg(2, 0xCAFECAFE)
+  instructions.AMOXORW(3, 1, 2, 0, 0);
+  assert(read32(100) === (0x14531453 | 0));
+  assert(getreg(1) === 100);
+  assert(getreg(2) === 0xCAFECAFE);
+  assert(getreg(3) === 0xDEADDEAD);
+})
+
+test("AMOANDW", () => {
+  write32(100, 0xDEADDEAD);
+  setreg(1, 100);
+  setreg(2, 0xCAFECAFE)
+  instructions.AMOANDW(3, 1, 2, 0, 0);
+  assert(read32(100) === (0xCAACCAAC | 0));
+  assert(getreg(1) === 100);
+  assert(getreg(2) === 0xCAFECAFE);
+  assert(getreg(3) === 0xDEADDEAD);
+})
+
+test("AMOORW", () => {
+  write32(100, 0xDEADDEAD);
+  setreg(1, 100);
+  setreg(2, 0xCAFECAFE)
+  instructions.AMOORW(3, 1, 2, 0, 0);
+  assert(read32(100) === (0xDEFFDEFF | 0));
+  assert(getreg(1) === 100);
+  assert(getreg(2) === 0xCAFECAFE);
+  assert(getreg(3) === 0xDEADDEAD);
+})
+
+test("AMOMINW", () => {
+  write32(100, 0xDEADDEAD);
+  setreg(1, 100);
+  setreg(2, 0xCAFECAFE)
+  instructions.AMOMINW(3, 1, 2, 0, 0);
+  assert(read32(100) === (0xCAFECAFE | 0));
+  assert(getreg(1) === 100);
+  assert(getreg(2) === 0xCAFECAFE);
+  assert(getreg(3) === 0xDEADDEAD);
+})
+
+test("AMOMINW: pos/neg", () => {
+  write32(100, 0xFFFF_FFFF);
+  setreg(1, 100);
+  setreg(2, 0x0000_0001)
+  instructions.AMOMINW(3, 1, 2, 0, 0);
+  assert(read32(100) === (0xFFFF_FFFF | 0));
+  assert(getreg(1) === 100);
+  assert(getreg(2) === 0x0000_0001);
+  assert(getreg(3) === 0xFFFF_FFFF);
+})
+
+test("AMOMAXW", () => {
+  write32(100, 0xDEADDEAD);
+  setreg(1, 100);
+  setreg(2, 0xCAFECAFE)
+  instructions.AMOMAXW(3, 1, 2, 0, 0);
+  assert(read32(100) === (0xDEADDEAD | 0));
+  assert(getreg(1) === 100);
+  assert(getreg(2) === 0xCAFECAFE);
+  assert(getreg(3) === 0xDEADDEAD);
+})
+
+test("AMOMAXW: pos/neg", () => {
+  write32(100, 0xFFFF_FFFF);
+  setreg(1, 100);
+  setreg(2, 0x0000_0001)
+  instructions.AMOMAXW(3, 1, 2, 0, 0);
+  assert(read32(100) === (0x0000_0001 | 0));
+  assert(getreg(1) === 100);
+  assert(getreg(2) === 0x0000_0001);
+  assert(getreg(3) === 0xFFFF_FFFF);
+})
+
+test("AMOMINUW", () => {
+  write32(100, 0xDEADDEAD);
+  setreg(1, 100);
+  setreg(2, 0xCAFECAFE)
+  instructions.AMOMINUW(3, 1, 2, 0, 0);
+  assert(read32(100) === (0xCAFECAFE | 0));
+  assert(getreg(1) === 100);
+  assert(getreg(2) === 0xCAFECAFE);
+  assert(getreg(3) === 0xDEADDEAD);
+})
+
+test("AMOMAXUW", () => {
+  write32(100, 0xDEADDEAD);
+  setreg(1, 100);
+  setreg(2, 0xCAFECAFE)
+  instructions.AMOMAXUW(3, 1, 2, 0, 0);
+  assert(read32(100) === (0xDEADDEAD | 0));
+  assert(getreg(1) === 100);
+  assert(getreg(2) === 0xCAFECAFE);
+  assert(getreg(3) === 0xDEADDEAD);
 })
