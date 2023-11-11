@@ -1,5 +1,8 @@
 # ./configure --prefix=/opt/riscv --with-arch=rv32iam --disable-linux
 # make -j $(nproc)
+install:
+	git submodule update --init
+	
 
 compile: test.c
 	riscv32-unknown-elf-gcc -O1 -nostartfiles test.c -o test.elf
