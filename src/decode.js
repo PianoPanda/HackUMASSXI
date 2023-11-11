@@ -179,21 +179,27 @@ function decode(op, i) {
           case 0b1100111:
             switch (func3) {
               case 0b000: //JALR
+                i.JALR(rd, rs1, imm)
                 break
               default:
                 throw new Exception(f`Illegal func for instruction ${op.toString(16)}`)
             }
           case 0b0000011:
             switch (func3) {
-              case 0b000: //LB
+              case 0b000:
+                i.LB(rd, rs1, imm)
                 break
-              case 0b001: //LH
+              case 0b001:
+                i.LH(rd, rs1, imm)
                 break
-              case 0b010: //LW
+              case 0b010:
+                i.LW(rd, rs1, imm)
                 break
-              case 0b100: //LBU
+              case 0b100:
+                i.LBU(rd, rs1, imm)
                 break
-              case 0b101: //LHU
+              case 0b101:
+                i.LHU(rd, rs1, imm)
                 break
               default:
                 throw new Exception(f`Illegal func for instruction ${op.toString(16)}`)
@@ -204,19 +210,25 @@ function decode(op, i) {
               case 0b000:
                 i.ADDI(rd, rs1, imm)
                 break
-              case 0b001: //SLTI
+              case 0b001:
+                i.SLTI(rd, rs1, imm)
                 break
-              case 0b011: //SLTIU
+              case 0b011:
+                i.SLTIU(rd, rs1, imm)
                 break
-              case 0b100: //XORI
+              case 0b100:
+                i.XORI(rd, rs1, imm)
                 break
-              case 0b110: //ORI
+              case 0b110:
+                i.ORI(rd, rs1, imm)
                 break
-              case 0b111: //ANDI
+              case 0b111:
+                i.ANDI(rd, rs1, imm)
               default:
                 throw new Exception(f`Illegal func for instruction ${op.toString(16)}`)
             }
           case 0b0001111: //FENCE.I it's a noop I guess?
+            i.FENCEI()
             break
           default:
             throw new Exception(f`Illegal opcode for instruction ${op.toString(16)}`)
