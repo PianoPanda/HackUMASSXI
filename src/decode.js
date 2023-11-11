@@ -28,6 +28,24 @@ function decode(op) {
 
     case TYPES.R:
       //TODO: fill out
+      const rd = bitsfrom(op, 7, 5);
+      const funct3 = bitsfrom(op, 12, 3);
+      const rs1 = bistfrom(op, 15, 5);
+      const rs2 = bitsfrom(op, 20, 5)
+      const funct7 = bitsfrom(op, 25, 7)
+      
+      switch (opcode) {
+        case 0b0010011: 
+        switch (func) {
+          case 0b001:
+            //TODO:
+            //SLLI, shamt, 
+            break
+          case 0b
+          default: 
+            throw new Exception(f`Illegal func for instruction ${op.toString(16)}`)
+        }
+      }
       break;
     case TYPES.I:
 
