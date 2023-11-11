@@ -190,7 +190,6 @@ export const instructions = {
     setreg(rd, arg1);
     const result = arg1 + arg2
     write32(getreg(rs1), result)
-
   },
   // Maxwell working on this
   // x[rd] = AMO32(M[x[rs1]] ^ x[rs2])
@@ -200,7 +199,6 @@ export const instructions = {
     setreg(rd, arg1);
     const result = arg1 ^ arg2
     write32(getreg(rs1), result)
-
   },
   // Maxwell working on this
   // x[rd] = AMO32(M[x[rs1]] & x[rs2])
@@ -210,7 +208,6 @@ export const instructions = {
     setreg(rd, arg1);
     const result = arg1 & arg2
     write32(getreg(rs1), result)
-
   },
   // Maxwell working on this
   // x[rd] = AMO32(M[x[rs1]] | x[rs2])
@@ -220,7 +217,6 @@ export const instructions = {
     setreg(rd, arg1);
     const result = arg1 | arg2
     write32(getreg(rs1), result)
-
   },
   // Maxwell working on this
   // x[rd] = AMO32(M[x[rs1]] MIN x[rs2])
@@ -230,7 +226,6 @@ export const instructions = {
     setreg(rd, arg1);
     const result = Math.min(arg1 | 0, arg2 | 0)
     write32(getreg(rs1), result)
-
   },
   // Maxwell working on this
   // x[rd] = AMO32(M[x[rs1]] MAX x[rs2])
@@ -240,7 +235,6 @@ export const instructions = {
     setreg(rd, arg1);
     const result = Math.max(arg1 | 0, arg2 | 0)
     write32(getreg(rs1), result)
-
   },
   // Maxwell working on this
   // x[rd] = AMO32(M[x[rs1]] MINU x[rs2])
