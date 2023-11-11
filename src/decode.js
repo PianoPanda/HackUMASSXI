@@ -77,7 +77,6 @@ function decode(op) {
 
 function gettype(opcode) {
 
-  //TODO: fill out with opcodes
   switch (opcode) {
     //R-type
     case 0b0110011: //ADD
@@ -94,6 +93,25 @@ function gettype(opcode) {
     case 0b0010011: //SRLI
     case 0b0010011: //SRAI
     case 0b0001111: //FENCE
+    case 0b1110011: //MUL
+    case 0b1110011: //MULH
+    case 0b1110011: //MULHSU
+    case 0b1110011: //MULHU
+    case 0b1110011: //DIV
+    case 0b1110011: //DIVU
+    case 0b1110011: //REM
+    case 0b1110011: //REMU
+    case 0b1110011: //LR.W
+    case 0b1110011: //SC.W
+    case 0b1110011: //AMOSWAP.W
+    case 0b1110011: //AMOADD.W
+    case 0b1110011: //AMOXOR.W
+    case 0b1110011: //AMOAND.W
+    case 0b1110011: //AMOOR.W
+    case 0b1110011: //AMOMIN.W
+    case 0b1110011: //AMOMAX.W
+    case 0b1110011: //AMOMINU.W
+    case 0b1110011: //AMOMAXU.W
       return TYPES.R;
     //I-type
     case 0b1100111: //JALR
@@ -108,6 +126,13 @@ function gettype(opcode) {
     case 0b0010011: //XORI
     case 0b0010011: //ORI
     case 0b0010011: //ANDI
+    case 0b0001111: //FENCE.I
+    case 0b1110011: //CSRRW
+    case 0b1110011: //CSRRS
+    case 0b1110011: //CSRRC
+    case 0b1110011: //CSRRWI
+    case 0b1110011: //CSRRSI
+    case 0b1110011: //CSRRCI
       return TYPES.I;
     //S-type
     case 0b0100011: //SB
