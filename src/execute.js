@@ -1,4 +1,5 @@
 import { read32, write32 } from "./ram.js"
+import { compuns } from "./util.js"
 
 /**
  * Gets the value in a register
@@ -19,18 +20,6 @@ function setreg(n, val) {
 
 function getpc() {}
 function setpc() {}
-
-/**
- * Compares numbers as unsigned integers
- * @param {number} a
- * @param {number} B
- */
-function compuns(a, b) {
-  let [_a, __a, _b, __b] = [a >>> 1, a & 1, b >>> 1, b & 1]
-  if (_a !== _b) return _a - _b
-  else return __a == __b ? 0 : __a - __b
-}
-
 
 export const instructions = {
 
