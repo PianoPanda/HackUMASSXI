@@ -75,9 +75,10 @@ export const instructions = {
 
   },
   MULHSU: function(rd, rs1, rs2) { //rs1 signed, rs2 unsigned
-    setreg(rd, {
-      return: setreg(BigInt(Int32Array([getreg(rs1)])) * BigInt(getreg(rs2))) >> BigInt(32)
-      })
+    const highWord = parseInt(getreg(rs1).toString(2).slice(0, 4), 2)
+    const lowWord = parseInt(getreg(rs2).toString(2).slice(28), 2)
+    const product = BigInt(Int32Array([highWord])) * BigInt(lowWord) >> BigInt(32)
+    setreg(rd, product)
   },
   SLTU: function(rd, rs1, rs2) {
 
