@@ -16,8 +16,35 @@ const testExecutable = new Uint8Array(
 );
 //entry at pc=0x00
 //should return (a5 = 0)
+test("add: 1 + 2", () => {
+  setreg(1, 1);
+  setreg(2, 2);
+  instructions.ADD(3, 1, 2);
+  assert(getreg(3) === 3)
+})
 
-test("MUL", () => {
+test("add: 1 + (-2)", () => {
+  setreg(1, 1)
+  setreg(2, 0xFFFF_FFFE)
+  instructions.ADD(3, 1, 2);
+  assert(getreg(3) === 0xFFFF_FFFF) //todo
+})
+
+test("add: (-1) + 2", () => {
+  setreg(1, 0xFFFF_FFFF)
+  setreg(2, 2)
+  instructions.ADD(3, 1, 2);
+  assert(getreg(3), 1) //todo
+})
+
+test("add: (-1) + (-2)", () => {
+  setreg(1, 0xFFFF_FFFF)
+  setreg(2, 0xFFFF_FFFE)
+  instructions.ADD(3, 1, 2);
+  assert(getreg(3), 0xFFFF_FFFD) //todo
+})
+
+test("MUL: typical imput", () => {
   setreg(1, 4)
   setreg(2, 5)
   instructions.MUL(3, 1, 2)
