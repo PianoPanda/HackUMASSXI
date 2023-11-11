@@ -1,7 +1,7 @@
 import { read32, write32 } from "./ram.js"
 import { compuns } from "./util.js"
 
-const registers = Uint32Array(32).fill(0);
+const registers = new Uint32Array(32).fill(0);
 const csrData = {
   // Trap handler setup
   [0x300]: 0x00000000, // MRW: mstatus [refer to privileged: 3.1.6 Machine Status Registers for info]
@@ -15,6 +15,9 @@ const csrData = {
   [0x342]: 0x00000000, // MRW: mcause [First bit is whether an interrupt caused it, next bits are a cause of an exception]
   [0x343]: 0x00000000, // MRW: mtval [Page fault address]
   [0x344]: 0x00000000, // MRW: mip [bit i represents if interrupt i is currently enqueued]
+
+  // Custom IO
+  [0x800]: 0x00000000, // Custom URW: value unused. write to write to term, read to read from term(non-blocking).
 
   // Cycle counter
   [0xC00]: 0x00000000, // URO: cycle [This is uptime in cycles]
@@ -37,6 +40,9 @@ function writeCSR(csr, value) {
   const changedBits = csrData[csr] ^ value; //TODO deal with permissions
   //TODO implement all side effects
   switch (csr) {
+    case 0x800:
+      console.log(`wrote ${value} to CSR 0x800`);
+      return;
     case 0xC00:
       return;
     case 0xF11:
@@ -51,7 +57,7 @@ function writeCSR(csr, value) {
  * @param {number} n
  * @returns {number}
  */
-function getreg(n) {
+export function getreg(n) {
   return registers[n]
 }
 
@@ -60,7 +66,7 @@ function getreg(n) {
  * @param {number} n
  * @param {uint32} val - what to set it to
  */
-function setreg(n, val) {
+export function setreg(n, val) {
   if (n !== 0) registers[n] = val & 0xffffffff;
 }
 
@@ -88,7 +94,7 @@ export const instructions = {
     setreg(rd, getreg(rs2) - getreg(rs1))
   },
   MUL: function (rd, rs1, rs2) {
-    setreg(rd, BigInt(getreg(rs1)) * BigInt(getreg(rs2)))
+    setreg(rd, Number(BigInt.asIntN(32, BigInt(getreg(rs1)) * BigInt(getreg(rs2)))))
   },
   SLL: function(rd, rs1, rs2) { //rs1 logical left shifted by lower 5 bits of rs2
     const shamt = parseInt(rs2.toString(2).slice(27), 2)

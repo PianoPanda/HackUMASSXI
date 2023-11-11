@@ -1,3 +1,6 @@
+import { getreg, setreg, instructions } from "./execute.js"
+import { test } from "bun:test";
+
 const testExecutable = new Uint8Array(
   new Uint32Array([
     0x064000ef, 0xfd010113, 0x02112623, 0x02812423, 0x03010413, 0xfca42e23,
@@ -13,3 +16,9 @@ const testExecutable = new Uint8Array(
 //entry at pc=0x00
 //should return (a5 = 0)
 
+test("MUL", () => {
+  setreg(1, 4)
+  setreg(2, 5)
+  instructions.MUL(3, 1, 2)
+  console.log(getreg(3) == 20)
+})

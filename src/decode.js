@@ -243,7 +243,7 @@ export function decode(op, i) {
         const rs2 = bitsfrom(op, 20, 5)
         const imm_5_11 = bitsfrom(op, 25, 7)
 
-        const imm = combine([[imm_0_4, 5], [imm_5_11, 7]])
+        const imm = combine([[imm_5_11, 7], [imm_0_4, 5]])
 
         switch (opcode) {
           case 0b0100011:
@@ -291,7 +291,17 @@ export function decode(op, i) {
       }
       break;
     case TYPES.U:
-      //TODO: fill out
+      {
+        const rd = bitsfrom(op, 7, 5)
+        const imm = op & (~0xfff)
+
+        switch (opcode) {
+          case 0b0110111: i.LUI(rd, imm); break
+          case 0b0010111: i.AUIPC(rd, imm); break
+          default:
+            throw new Error(`Illegal opcode for instruction ${op.toString(16)}`)
+        }
+      }
       break;
     case TYPES.J:
       {
