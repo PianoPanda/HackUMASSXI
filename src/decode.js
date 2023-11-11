@@ -60,86 +60,112 @@ export function decode(op, i) {
       const funct3 = bitsfrom(op, 12, 3);
       const rs1 = bitsfrom(op, 15, 5);
       const rs2 = bitsfrom(op, 20, 5)
-      let funct7 = bitsfrom(op, 25, 7)
-      
+      const funct7 = bitsfrom(op, 25, 7)
+      const rl = bitsfrom(op, 25, 1)
+      const aq = bitsfrom(op, 26, 1)
+      const funct7A = bitsfrom(op, 27, 5)
+
       switch (opcode) {
         case 0b0010011: 
-        switch (funct3) {
-          case 0b001: r.SLLI(rd, rs1, shamt)//SLLI, shamt, logical left shift
-          case 0b101:
-            switch (funct7) {
-              case 0b0000000: r.SRLI(rd, rs1, shamt) //SRLI, shamt, logical right shift
-              case ob0100000: r.SRAI(rd, rs1, shamt) //SRAI, shamt, arithmetic right shift
-              default:
-                throw new Exception(f`SRLI or SRAI wrong ${op.toString(16)}`)
-            }
-          default: 
-            throw new Exception(f`Illegal func for instruction ${op.toString(16)}`)
+          switch (funct3) {
+            case 0b001: r.SLLI(rd, rs1, shamt); break//SLLI, shamt, logical left shift
+            case 0b101:
+              switch (funct7) {
+                case 0b0000000: r.SRLI(rd, rs1, shamt); break//SRLI, shamt, logical right shift
+                case 0b0100000: r.SRAI(rd, rs1, shamt); break//SRAI, shamt, arithmetic right shift
+                default:
+                  throw new Exception(f`SRLI or SRAI wrong ${op.toString(16)}`)
+              }
+            default: 
+              throw new Exception(f`Illegal func for instruction ${op.toString(16)}`)
         }
+        break;
         case 0b0110011:
-        switch (funct3) {
-          case 0b000:
-            switch (funct7) {
-              case 0b0000000: r.ADD(rd, rs1, rs2); break
-              case 0b0100000: r.SUB(rd, rs1, rs2); break
-              case 0b0000001: r.MUL(rd, rs1, rs2); break
-              default:
-                throw new Exception(f`ADD or SUB or MUL wrong ${op.toString(16)}`)
-            }
-          case 0b001:
-            switch (funct7) {
-              case 0b0000000: r.SLL(rd, rs1, rs2); break
-              case 0b0000001: r.MULH(rd, rs1, rs2); break
-              default:
-                throw new Exception(f`SLL or MULH wrong ${op.toString(16)}`)
-            }
-          case 0b010: 
-            switch (funct7) {
-              case 0b0000000: r.SLT(rd, rs1, rs2); break
-              case 0b0000001: r.MULHSU(rd, rs1, rs2); break
-              default:
-                throw new Exception(f`SLT or MULHSU wrong ${op.toString(16)}`)
-            }
-          case 0b011: 
-            switch (funct7) {
-              case 0b0000000: r.SLTU(rd, rs1, rs2); break
-              case 0b0000001: r.MULHU(rd, rs1, rs2); break
-              default:
-                throw new Exception(f`SLTU or MULHU wrong ${op.toString(16)}`)
-            }
-          case 0b100:
-            switch (funct7) {
-              case 0b0000000: r.XOR(rd, rs1, rs2); break
-              case 0b0000001: r.DIV(rd, rs1, rs2); break
-              default:
-                throw new Exception(f`XOR or DIV wrong ${op.toString(16)}`)
-            }
-          case 0b101:
-            switch (funct7) {
-              case 0b0000000: r.SRL(rd, rs1, rs2); break
-              case 0b0100000: r.SRA(rd, rs1, rs2); break
-              case 0b0000001: r.DIVU(rd, rs1, rs2); break
-              default:
-                throw new Exception(f`SRL or SRA or DIVU wrong ${op.toString(16)}`)
-            }
-          case 0b110:
-            switch (funct7) {
-              case 0b0000000: r.OR(rd, rs1, rs2); break
-              case 0b0000001: r.REM(rd, rs1, rs2); break
-              default: 
-                throw new Exception(f`OR or REM wrong ${op.toString(16)}`)
-            }
-          case 0b111:
-            switch (funct7) {
-              case 0b0000000: r.AND(rd, rs1, rs2); break
-              case 0b0000001: r.REMU(rd, rs1, rs2); break
-              default:
-                throw new Exception(f`AND or REMU wrong ${op.toString(16)}`)
-            }
-        }
+          switch (funct3) {
+            case 0b000:
+              switch (funct7) {
+                case 0b0000000: r.ADD(rd, rs1, rs2); break
+                case 0b0100000: r.SUB(rd, rs1, rs2); break
+                case 0b0000001: r.MUL(rd, rs1, rs2); break
+                default:
+                  throw new Exception(f`ADD or SUB or MUL wrong ${op.toString(16)}`)
+              }
+            case 0b001:
+              switch (funct7) {
+                case 0b0000000: r.SLL(rd, rs1, rs2); break
+                case 0b0000001: r.MULH(rd, rs1, rs2); break
+                default:
+                  throw new Exception(f`SLL or MULH wrong ${op.toString(16)}`)
+              }
+            case 0b010: 
+              switch (funct7) {
+                case 0b0000000: r.SLT(rd, rs1, rs2); break
+                case 0b0000001: r.MULHSU(rd, rs1, rs2); break
+                default:
+                  throw new Exception(f`SLT or MULHSU wrong ${op.toString(16)}`)
+              }
+            case 0b011: 
+              switch (funct7) {
+                case 0b0000000: r.SLTU(rd, rs1, rs2); break
+                case 0b0000001: r.MULHU(rd, rs1, rs2); break
+                default:
+                  throw new Exception(f`SLTU or MULHU wrong ${op.toString(16)}`)
+              }
+            case 0b100:
+              switch (funct7) {
+                case 0b0000000: r.XOR(rd, rs1, rs2); break
+                case 0b0000001: r.DIV(rd, rs1, rs2); break
+                default:
+                  throw new Exception(f`XOR or DIV wrong ${op.toString(16)}`)
+              }
+            case 0b101:
+              switch (funct7) {
+                case 0b0000000: r.SRL(rd, rs1, rs2); break
+                case 0b0100000: r.SRA(rd, rs1, rs2); break
+                case 0b0000001: r.DIVU(rd, rs1, rs2); break
+                default:
+                  throw new Exception(f`SRL or SRA or DIVU wrong ${op.toString(16)}`)
+              }
+            case 0b110:
+              switch (funct7) {
+                case 0b0000000: r.OR(rd, rs1, rs2); break
+                case 0b0000001: r.REM(rd, rs1, rs2); break
+                default: 
+                  throw new Exception(f`OR or REM wrong ${op.toString(16)}`)
+              }
+            case 0b111:
+              switch (funct7) {
+                case 0b0000000: r.AND(rd, rs1, rs2); break
+                case 0b0000001: r.REMU(rd, rs1, rs2); break
+                default:
+                  throw new Exception(f`AND or REMU wrong ${op.toString(16)}`)
+              }
+            default:
+              throw new Exception(f`0b0110011 stuff ${op.toString(16)}`)
+          }
+          break;
+        case 0b0101111: 
+          switch(funct7A) {
+            case 0b00010: r.LRW(rd, rs1, rl, aq); break //rs2 is 00000
+            case 0b00011: r.SCW(rd, rs1, rs2, rl, aq); break
+            case 0b00001: r.AMOSWAPW(rd, rs1, rs2, rl, aq); break
+            case 0b00000: r.AMOADDW(rd, rs1, rs2, rl, aq); break
+            case 0b00100: r.AMOXORW(rd, rs1, rs2, rl, aq); break
+            case 0b01100: r.AMOANDW(rd, rs1, rs2, rl, aq); break
+            case 0b01000: r.AMOORW(rd, rs1, rs2, rl, aq); break
+            case 0b10000: r.AMOMINW(rd, rs1, rs2, rl, aq); break
+            case 0b10100: r.AMOMAXW(rd, rs1, rs2, rl, aq); break
+            case 0b11000: r.AMOMINUW(rd, rs1, rs2, rl, aq); break
+            case 0b11100: r.AMOMAXUW(rd, rs1, rs2, rl, aq); break
+            default:
+              throw new Exception(f`illegal RV32A extension instructions ${op.toString(16)}`)
+          }
+        break;
+        default: 
+          throw new Exception(f`illegal type R stuff ${op.toString(16)}`) 
       }
     }
-      break;
+    break;
     case TYPES.I:
       {
         const rd = bitsfrom(op, 7, 5);
@@ -233,7 +259,7 @@ export function decode(op, i) {
 
         switch (opcode) {
           case 0b1100111:
-             switch (func3) {
+            switch (func3) {
               case 0b000: i.BEQ(rs1, rs2, imm); break
               case 0b001: i.BNE(rs1, rs2, imm); break
               case 0b100: i.BLT(rs1, rs2, imm); break
@@ -309,8 +335,6 @@ function gettype(opcode) {
     //R-type
     case 0b0110011:
     case 0b0010011:
-    case 0b0001111:
-    case 0b1110011:
     case 0b0101111:
       return TYPES.R;
     //I-type

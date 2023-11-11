@@ -100,6 +100,46 @@ export const instructions = {
   REMU: function(rd, rs1, rs2) {
 
   },
+
+  LRW: function(rd, rs1, rl, aq) {
+
+  },
+  SCW: function(rd, rs1, rs2, rl, aq) {
+
+  },
+  AMOSWAPW: function(rd, rs1, rs2, rl, aq) {
+
+  },
+  AMOADDW: function(rd, rs1, rs2, rl, aq) {
+
+  },
+  AMOXORW: function(rd, rs1, rs2, rl, aq) {
+
+  },
+  AMOANDW: function(rd, rs1, rs2, rl, aq) {
+
+  },
+  AMOORW: function(rd, rs1, rs2, rl, aq) {
+
+  },
+  AMOMINW: function(rd, rs1, rs2, rl, aq) {
+
+  },
+  AMOMAXW: function(rd, rs1, rs2, rl, aq) {
+
+  },
+  AMOMINUW: function(rd, rs1, rs2, rl, aq) {
+
+  },
+  AMOMAXW: function(rd, rs1, rs2, rl, aq) {
+
+  },
+  AMOMINUW: function(rd, rs1, rs2, rl, aq) {
+
+  },
+  AMOMAXUW: function(rd, rs1, rs2, rl, aq) {
+
+  },
 // -------
 
   JALR: function(rd, rs1, imm) {
