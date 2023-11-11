@@ -44,6 +44,14 @@ test("decode i suite", () => {
 })
 
 test("decode s suite", () => {
-    decode.decode(0x23261100, { SW: console.log})
+    decode.decode(0x23261100, { SW: wantparams([2, 1, 12]) })
+})
+
+test("decode b suite", () => {
+    //TODO
+})
+
+test("decode u suite", () => {
+    decode.decode(0xb7170100, { LUI: wantparams([15, 69632]) })
 })
 
