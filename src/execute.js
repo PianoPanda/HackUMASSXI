@@ -55,7 +55,24 @@ export const instructions = {
   },
 
   ADD: function(rd, rs1, rs2) {
-    
+    var result = "", carry = 0
+    while(a || b || carry){
+      let sum = +rs1.slice(-1) + +rs2.slice(-1) + carry // get last digit from each number and sum 
+
+      if( sum > 1 ){  
+        result = sum%2 + result
+        carry = 1
+      } else{
+        result = sum + result
+        carry = 0
+      }
+    // trim last digit (110 -> 11)
+    rs1 = rs1.slice(0, -1)
+    rs2 = rs2.slice(0, -1)
+    }
+    // stores in rd
+    rd = result
+    //return result
   },
   SUB: function(rd, rs1, rs2) {
 
