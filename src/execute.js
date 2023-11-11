@@ -170,11 +170,21 @@ export const instructions = {
     setreg(rd, rs1 / rs2) 
   },
 
+  //TODO Complete LRW and SCW once interrupt mechanism is in place
   LRW: function (rd, rs1, rl, aq) {
-
+    // already in 32 bit format with rs1, no need for sign extension 
+    setreg(rd, getreg(rs1))
+    // memory reservation stuff
+    write32(rs1, getreg(rs1))
   },
   SCW: function (rd, rs1, rs2, rl, aq) {
-
+    if (read32(rs1 === getreg(rs1))) {
+      write32(rs2, getreg(rs2))
+      write32(rs1, 0)
+      setreg(rd, 0)
+    } else {
+      setreg(rd, 1)
+    }
   },
   // Maxwell working on this
   // x[rd] = AMO32(M[x[rs1]] SWAP x[rs2])
