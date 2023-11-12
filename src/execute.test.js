@@ -1,8 +1,9 @@
 import assert from "assert";
 import { getreg, setreg, instructions, setpc } from "./execute.js"
-import { test } from "bun:test";
+import { expect, test } from "bun:test";
 import { read32, write32 } from "./ram.js";
 import { toHex } from "./util.js";
+import { type } from "os";
 
 const testExecutable = new Uint8Array(
   new Uint32Array([
@@ -44,6 +45,72 @@ test("ADD: (-1) + (-2)", () => {
   setreg(2, 0xFFFF_FFFE)
   instructions.ADD(3, 1, 2);
   assert(getreg(3), 0xFFFF_FFFD) //todo
+})
+
+test("SUB: Two Positives", () => {
+  setreg(1, 1)
+  setreg(2, 99)
+  instructions.SUB(3, 1, 2)
+  expect(getreg(3) | 0).toBe(98)
+})
+
+test("SUB: Two Negatives", () => {
+  setreg(1, -1999)
+  setreg(2, -9999)
+  instructions.SUB(3, 1, 2)
+  expect(getreg(3) | 0).toBe(-8000)
+})
+
+test("SUB: Pos & Neg", () => {
+  setreg(1, 25)
+  setreg(2, -125)
+  instructions.SUB(3, 1, 2)
+  expect(getreg(3) | 0).toBe(-150)
+})
+
+test("SUB: zeros", () => {
+  setreg(1, 0)
+  setreg(2, 123)
+  instructions.SUB(3, 1, 2)
+  expect(getreg(3) | 0).toBe(123)
+
+  setreg(1, 0)
+  setreg(2, -321)
+  instructions.SUB(3, 1, 2)
+  expect(getreg(3) | 0).toBe(-321)
+
+  setreg(1, 123)
+  setreg(2, 0)
+  instructions.SUB(3, 1, 2)
+  expect(getreg(3) | 0).toBe(-123)
+
+  setreg(1, -321)
+  setreg(2, 0)
+  instructions.SUB(3, 1, 2)
+  expect(getreg(3) | 0).toBe(321)
+})
+
+test("DIV: zero", () => {
+  setreg(1, 2)
+  setreg(2, 0)
+  expect(() => instructions.DIV(_, 1, 2)).toThrow()
+})
+
+test("DIV: regular division", () => {
+  setreg(1, 2)
+  setreg(2, 1)
+  instructions.DIV(3, 1, 2)
+  expect(getreg(3) | 0).toBe(2)
+
+  setreg(1, 10)
+  setreg(2, 3)
+  instructions.DIV(3, 1, 2)
+  expect(getreg(3) | 0).toBe(3)
+
+  setreg(1, -99)
+  setreg(2, 3)
+  instructions.DIV(3, 1, 2)
+  expect(getreg(3) | 0).toBe(-33)
 })
 
 test("DIVU: suite", () => {
