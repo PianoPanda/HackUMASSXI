@@ -152,7 +152,7 @@ export const instructions = {
   },
   DIVU: function (rd, rs1, rs2) {
     if (rs2 === 0) throw new Exception("Unsigned division by 0")
-    setreg(rd, div1 / div2)
+    setreg(rd, getreg(rs1) / getreg(rs2))
   },
   OR: function (rd, rs1, rs2) {
     setreg(rd, rs1 | rs2)
