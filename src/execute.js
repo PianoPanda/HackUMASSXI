@@ -1,8 +1,9 @@
 import { decode } from "./decode.js";
-import { memory, read32, write32 } from "./ram.js"
-import { compuns, format32, toHex } from "./util.js"
+import { RAM_SIZE, memory, read32, write32 } from "./ram.js"
+import { compuns, format32, toBinary, toHex } from "./util.js"
 
 const registers = new Uint32Array(32).fill(0);
+registers[2] = RAM_SIZE - 4; // put sp at the top of stack
 const csrData = {
   // Trap handler setup
   [0x300]: 0x00000000, // MRW: mstatus [refer to privileged: 3.1.6 Machine Status Registers for info]
@@ -37,7 +38,8 @@ export function dump() {
   })
   console.log(
     `====CORE DUMP====
-pc: 0x${toHex(Number(pc[0]))}
+pc: 0x${toHex(pc[0])}
+current instruction: ${toBinary(read32(getpc()))}
 registers: \n\t${Array.from(registers).map(x => toHex(x)).join('\n\t')}
 memory [0x${toHex(dumpStart)} - 0x${toHex(dumpStart + 0xFF)}]: \n\t${memBlock.map(
   row => row.map(x => toHex(x, 2)).join(' ')

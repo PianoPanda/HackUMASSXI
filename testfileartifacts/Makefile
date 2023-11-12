@@ -5,8 +5,8 @@ install:
 	
 
 compile: c_test.c
-	riscv32-unknown-elf-gcc -O1 -nostartfiles c_test.c -S c_test.s
-	riscv32-unknown-elf-gcc -O1 -nostartfiles c_test.s -o c_test.elf
+	riscv32-unknown-elf-gcc -O1 c_test.c -S c_test.s
+	riscv32-unknown-elf-gcc -O1 c_test.s -o c_test.elf
 	make c_elftobin
 
 assemble: asm_test.s
