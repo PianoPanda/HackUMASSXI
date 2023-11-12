@@ -3,4 +3,6 @@ This is the repository for a HackUMASS XI project from November 10, 2023 to Nove
 
 This goal of this hack is to create something that will be able to run linux on a given website
 
+The website can be accessed at https://hackumass11.uc.r.appspot.com.
+
 The members of this project are Bennett Gillig, Junyang Lu, Marshall Rodes, Maxwell Tang, and Steven Zhang.
