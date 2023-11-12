@@ -42,6 +42,13 @@ export function softDump() {
     console.log(`Invalid pc: 0x${toHex(pc[0])}`)
   }
 }
+
+export function logNear(address){
+  for(let addr = Math.max(0, address - 24); addr <= Math.min(RAM_SIZE - 4, address + 24); addr+=4){
+    console.log(`[0x${toHex(addr)}]: 0x${toHex(read32(addr))}`)
+  }
+}
+
 export function dump() {
   const dumpStart = 0x00
   const memRange = Array.from(memory).slice(dumpStart, dumpStart + 0x100);
@@ -301,13 +308,13 @@ export const instructions = {
 
   //TODO: TEST THESE
   SB: function (rs1, rs2, imm) {
-    write32(getreg(rs1) + imm, rs2 << 24 >> 24)
+    write32(getreg(rs1) + imm, getreg(rs2) << 24 >> 24)
   },
   SH: function (rs1, rs2, imm) {
-    write32(getreg(rs1) + imm, rs2 << 16 >> 16)
+    write32(getreg(rs1) + imm, getreg(rs2) << 16 >> 16)
   },
   SW: function (rs1, rs2, imm) {
-    write32(getreg(rs1) + imm, rs2)
+    write32(getreg(rs1) + imm, getreg(rs2))
   },
 
   ADDI: function (rd, rs1, imm) {
