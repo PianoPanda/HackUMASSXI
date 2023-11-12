@@ -11,7 +11,7 @@ console.log("====BEGIN TRACE====")
 try{
 while(true){
     // console.log()
-    softDump();
+    // softDump();
     // console.log(toHex(registers[1]))
     // switch(getpc()){
     //     case 0x10c:
@@ -20,7 +20,6 @@ while(true){
     //     logNear(registers[2])
     // }
 
-    logReg('a0')
     cpuSteps(1);
 }
 } catch (exception){

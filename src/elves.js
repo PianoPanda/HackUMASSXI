@@ -118,9 +118,10 @@ export default function loadELF(elfData, startSymbolName = "main") {
         symbol_index++;
     }
     const symbolNameBase = strTabSection.sh_offset;
+    console.log("symbol table")
     symbolManifList.forEach((manif) => {
-        logString(symbolNameBase + manif.name_ptr)
-        logWord(manif.address, "\t")
+        logString(symbolNameBase + manif.name_ptr, "\t")
+        logWord(manif.address, "\t\t")
         manif.name = getString(symbolNameBase + manif.name_ptr)
     })
     const startCode = symbolManifList.find(sym => sym.name === startSymbolName)
