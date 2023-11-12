@@ -424,8 +424,7 @@ export const instructions = {
   },
 
   AUIPC: function (rd, imm) {
-    const displacement = BigInt(imm) << 12n;
-    setreg(rd, Number((BigInt(getpc()) + displacement) & 0xFFFF_FFFFn))
+    setreg(rd, getpc() + imm)
   },
 
   BEQ: function (rs1, rs2, imm) {
