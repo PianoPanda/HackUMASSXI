@@ -3,7 +3,7 @@ import { instructions as debug_instruction}from "./disassemble.js";
 import { RAM_SIZE, memory, read32, write32 } from "./ram.js"
 import { compuns, format32, toBinary, toHex } from "./util.js"
 
-const registers = new Uint32Array(32).fill(0);
+export const registers = new Uint32Array(32).fill(0);
 registers[2] = RAM_SIZE - 4; // put sp at the top of stack
 const csrData = {
   // Trap handler setup
@@ -21,6 +21,7 @@ const csrData = {
 
   // Custom IO
   [0x800]: 0x00000000, // Custom URW: value unused. write to write to term, read to read from term(non-blocking).
+  [0x801]: 0x00000000, // Custom URW: shutdown.
 
   // Cycle counter
   [0xC00]: 0x00000000, // URO: cycle [This is uptime in cycles]
@@ -35,7 +36,7 @@ const pc = new Uint32Array(1).fill(0);
  */
 export function softDump() {
   try {
-    console.log(`[0x${toHex(pc[0])}]: ${toBinary(read32(pc[0]))}}`);
+    console.log(`[0x${toHex(pc[0])}]: ${toBinary(read32(pc[0]))}`);
     decode(read32(getpc()), debug_instruction)
   } catch (exception) {
     console.log(`Invalid pc: 0x${toHex(pc[0])}`)
@@ -52,18 +53,18 @@ export function dump() {
     `====CORE DUMP====
 pc: 0x${toHex(pc[0])}
 current instruction: ${toBinary(read32(getpc()))}`);
-decode(read32(getpc()), debug_instruction);
 console.log(`
 registers: \n\t${Array.from(registers).map(x => toHex(x)).join('\n\t')}
 memory [0x${toHex(dumpStart)} - 0x${toHex(dumpStart + 0xFF)}]: \n\t${memBlock.map(
       row => row.map(x => toHex(x, 2)).join(' ')
     ).join('\n\t')}
-====END CORE DUMP====`
+====END CORE DUMP====\n`
   )
 }
 
 function readCSR(csr) {
-  if (!csr in csrData) throw new Error(`Attempted to read CSR 0x${toHex(csr, 3)}, which is not implemented`)
+  csr &= 0xfff;
+  if (!(csr in csrData)) throw new Error(`Attempted to read CSR 0x${toHex(csr, 3)}, which is not implemented`)
   //TODO implement all side effects
   switch (csr) {
     default:
@@ -72,13 +73,16 @@ function readCSR(csr) {
 }
 
 function writeCSR(csr, value) {
-  if (!csr in csrData) throw new Error(`Attempted to write CSR 0x${toHex(csr, 3)}, which is not implemented`)
+  csr &= 0xfff;
+  if (!(csr in csrData)) throw new Error(`Attempted to write CSR 0x${toHex(csr, 3)}, which is not implemented`)
   const changedBits = csrData[csr] ^ value; //TODO deal with permissions
   //TODO implement all side effects
   switch (csr) {
     case 0x800:
-      console.log(`wrote ${value} to CSR 0x800`);
+      process.stdout.write(String.fromCharCode(value));
       return;
+    case 0x801:
+      throw new Error(`Pretend this is a graceful shutdown with exit value ${value}!`);
     case 0xC00:
       return;
     case 0xF11:
@@ -262,9 +266,20 @@ export const instructions = {
     write32(getreg(rs1), result)
   },
 
-  JALR: function (rd, rs1, imm) {
+  //TODO: TEST THIS
+  JAL: function (rd, imm) {
     setreg(rd, getpc() + 4)
-    setpc(getpc() + rs1 + imm)
+    setpc(getpc() + imm)
+  },
+
+  JALR: function (rd, rs1, imm) {
+    setpc(((getreg(rs1) + imm) & ~1) - 4) //accounting for auto-increment of pc
+    /*
+      "The target address is obtained by adding the sign-extended
+      12-bit I-immediate to the register rs1, then setting the
+      least-significant bit of the result to zero."
+    */
+    setreg(rd, getpc())
   },
 
   //TODO: TEST THESE
@@ -316,12 +331,6 @@ export const instructions = {
 
   FENCEIL: function () { },
 
-  //TODO: TEST THIS
-  JAL: function (rd, imm) {
-    setreg(rd, getpc() + 4)
-    setpc(getpc() + imm)
-  },
-
   CSRRW: function (rd, rs1, csr) {
     const source = getreg(rs1);
     if (rd !== 0) setreg(rd, readCSR(csr));
@@ -367,27 +376,27 @@ export const instructions = {
 
   BEQ: function (rs1, rs2, imm) {
     if (getreg(rs1) == getreg(rs2))
-      setpc((getpc() + 4) + imm << 1)
+      setpc((getpc() + 4) + (imm << 1))
   },
   BNE: function (rs1, rs2, imm) {
     if (getreg(rs1) != getreg(rs2))
-      setpc((getpc() + 4) + imm << 1)
+      setpc((getpc() + 4) + (imm << 1))
   },
   BLT: function (rs1, rs2, imm) {
     if ((getreg(rs1) | 0) < (getreg(rs2) | 0))
-      setpc((getpc() + 4) + imm << 1)
+      setpc((getpc() + 4) + (imm << 1))
   },
   BLTU: function (rs1, rs2, imm) {
     if (getreg(rs1) < getreg(rs2))
-      setpc((getpc() + 4) + imm << 1)
+      setpc((getpc() + 4) + (imm << 1))
   },
   BGE: function (rs1, rs2, imm) {
     if ((getreg(rs1) | 0) >= (getreg(rs2) | 0))
-      setpc((getpc() + 4) + imm << 1)
+      setpc((getpc() + 4) + (imm << 1))
   },
   BGEU: function (rs1, rs2, imm) {
     if (getreg(rs1) >= getreg(rs2))
-      setpc((getpc() + 4) + imm << 1)
+      setpc((getpc() + 4) + (imm << 1))
   },
 
 }

@@ -4,6 +4,7 @@ testfileartifacts/*.elf
 testfileartifacts/*.hex
 testfileartifacts/*.dump
 testfileartifacts/c_test.s
+testfileartifacts/riscv
 
 # Based on https://raw.githubusercontent.com/github/gitignore/main/Node.gitignore
 

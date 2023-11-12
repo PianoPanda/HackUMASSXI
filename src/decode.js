@@ -294,7 +294,13 @@ export function decode(op, i) {
         const imm_5_10 = bitsfrom(op, 25, 6);
         const imm_12 = bitsfrom(op, 31, 1);
 
-        const imm = combine([[0, 1], [imm_1_4, 4], [imm_5_10, 6], [imm_11, 1], [imm_12, 1]])
+        const imm = combine([
+          [imm_12, 1],
+          [imm_11, 1],
+          [imm_5_10, 6],
+          [imm_1_4, 4],
+          [0, 1],
+        ]) << 20 >> 20
 
         switch (opcode) {
           case 0b1100011:
