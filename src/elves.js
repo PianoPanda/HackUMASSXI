@@ -108,7 +108,7 @@ export default function loadELF(elfData, startSymbolName = undefined) {
     const strTabSection = sectionManifList.find(manif => manif.name === ".strtab");
     const textSection = sectionManifList.find(manif => manif.name === ".text");
     length = textSection.sh_size
-    base = textSection.sh_addr
+    test_base = textSection.sh_addr
 
     const num_symbols = symTabSection.dataSegment.length / 16;
     logWord(num_symbols, "num_symbols = ")

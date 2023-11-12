@@ -4,14 +4,15 @@ import * as fs from "fs"
 import { exit } from "process";
 
 const elfData = new Uint8Array(fs.readFileSync(Bun.argv[2]))
-loadELF(elfData, "main");
+loadELF(elfData);
 
 console.log("\n\n\n\n")
 console.log("====BEGIN TRACE====")
 try{
-while(true){
+    let i = 100
+while(true && i--){
     // console.log()
-    // softDump();
+    softDump();
     // console.log(toHex(registers[1]))
     // switch(getpc()){
     //     case 0x10c:
