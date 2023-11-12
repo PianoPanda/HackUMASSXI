@@ -10,7 +10,7 @@ export async function loadbin(path) {
       num = fs.readSync(fd, buffer, 0, 4, null)
       write32(i++*4, buffer.readInt32LE())
     }
-    resolve()
+    resolve(i)
   }))
 }
 

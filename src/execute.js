@@ -25,7 +25,7 @@ const csrData = {
   // Vendor ID
   [0xF11]: 0xff0ff0ff, // MRO: mvendorid [Extra Credit: make this the funny number]
 }
-let pc = 0;
+const pc = Uint32Array(1).fill(0);
 
 function readCSR(csr) {
   if (!csr in csrData) throw new Error(`Attempted to read CSR 0x${toHex(csr, 3)}, which is not implemented`)
@@ -75,13 +75,13 @@ export function setreg(n, val) {
  * Returns the current value of pc
  * @returns {number}
  */
-export function getpc() { return pc }
+export function getpc() { return pc[0] }
 /**
  * Sets pc to `value`.
  * EXTERNAL USE FOR TESTING ONLY.
  * @param {number} value 
  */
-export function setpc(value) { pc = value }
+export function setpc(value) { pc[0] = value }
 
 export const instructions = {
 
@@ -106,68 +106,55 @@ export const instructions = {
   MUL: function (rd, rs1, rs2) {
     setreg(rd, Number(BigInt.asIntN(32, BigInt(getreg(rs1)) * BigInt(getreg(rs2)))))
   },
-  SLL: function (rd, rs1, rs2) { //rs1 logical left shifted by lower 5 bits of rs2
-    const shamt = parseInt(rs2.toString(2).slice(27), 2)
-    const leftShifted = rs1 << shamt
-    setreg(rd, leftShifted)
+  SLL: function(rd, rs1, rs2) {
+    setreg(rd, getreg(rs1) << (getreg(rs2) & 0b11111))
   },
-  MULH: function (rd, rs1, rs2) { //rs1 and rs2 are signed
-    setreg(rd, {
-      return: (BigInt(new Int32Array([getreg(rs1)])) * BigInt(new Int32Array([getreg(rs2)]))) >> BigInt(32)
-    })
+  MULH: function (rd, rs1, rs2) {
+    setreg(rd, Number(BigInt(getreg(rs1)|0) * BigInt(getreg(rs2)|0) >>> BigInt(32)))
   },
-  SLT: function (rd, rs1, rs2) { //compare signed
-    setreg(rd, getreg(rs1) | 0 < getreg(rs2) | 0 ? 1 : 0)
+  SLT: function (rd, rs1, rs2) {
+    setreg(rd, (getreg(rs1)|0) < (getreg(rs2)|0) ? 1 : 0)
   },
-  MULHSU: function (rd, rs1, rs2) { //rs1 signed, rs2 unsigned
-    const highWord = parseInt(getreg(rs1).toString(2).slice(0, 4), 2)
-    const lowWord = parseInt(getreg(rs2).toString(2).slice(28), 2)
-    const product = BigInt(new Int32Array([highWord])) * BigInt(lowWord) >>> BigInt(32)
-    setreg(rd, product)
+  MULHSU: function(rd, rs1, rs2) {
+    setreg(rd, Number(BigInt(getreg(rs1)|0) * BigInt(getreg(rs2)) >>> BigInt(32)))
   },
   SLTU: function (rd, rs1, rs2) {
     setreg(rd, getreg(rs1) < getreg(rs2) ? 1 : 0)
   },
   MULHU: function (rd, rs1, rs2) {
-    setreg(rd, BigInt(getreg(rs1)) * BigInt(getreg(rs2))) >>> BigInt(32)
+    setreg(rd, Number(BigInt(getreg(rs1)) * BigInt(getreg(rs2)) >>> BigInt(32)))
   },
   XOR: function (rd, rs1, rs2) {
-    setreg(rs1 ^ rs2)
+    setreg(rd, getreg(rs1) ^ getreg(rs2))
   },
   DIV: function (rd, rs1, rs2) { //signed division
-    if (rs2 === 0) throw new Exception("Signed division by 0")
-    const div1 = new Int32Array([rs1])
-    const div2 = new Int32Array([rs2])
-    setreg(rd, (div1 / div2) | 0)
+    if (getreg(rs2) === 0) throw new Exception("Signed division by 0")
+    setreg(rd, (getreg(rs1)|0) / (getreg(rs2)|0))
   },
   SRL: function (rd, rs1, rs2) {
-    const shamt = parseInt(rs2.toString(2).slice(27), 2)
-    const rightShifted = rs1 >>> shamt
-    setreg(rd, rightShifted)
+    setreg(rd, getreg(rs1) >> (getreg(rs2) & 0b11111))
   },
-  SRA: function (rd, rs1, rs2) { // arithmetic right shift //TODO
-    const shamt = parseInt(rs2.toString(2).slice(27), 2)
-    const logRightShifted = rs1 >> shamt
-    setreg(rd, logRightShifted)
+  SRA: function (rd, rs1, rs2) {
+    setreg(rd, getreg(rs1) >>> (getreg(rs2) & 0b11111))
   },
   DIVU: function (rd, rs1, rs2) {
-    if (rs2 === 0) throw new Exception("Unsigned division by 0")
-    setreg(rd, getreg(rs1) / getreg(rs2))
+    if (getreg(rs2) === 0) {
+      setreg(rd, -1|0);
+    } else {
+      setreg(rd, Math.trunc(getreg(rs1) / getreg(rs2)));
+    }
   },
   OR: function (rd, rs1, rs2) {
-    setreg(rd, rs1 | rs2)
+    setreg(rd, getreg(rs1) | getreg(rs2))
   },
-  REM: function (rd, rs1, rs2) { // sign mirrors rs1
-    const div1 = new Int32Array([rs1])
-    const div2 = new Int32Array([rs2])
-    const remainder = div1 / Math.abs(div2)
-    setreg(rd, remainder)
+  REM: function (rd, rs1, rs2) {
+    setreg(rd, (getreg(rs2)|0) % (getreg(rs1)|0))
   },
   AND: function (rd, rs1, rs2) {
-    setreg(rd, rs1 & rs2)
+    setreg(rd, getreg(rs1) & getreg(rs2))
   },
-  REMU: function (rd, rs1, rs2) { //unsigned div for remainder
-    setreg(rd, rs1 / rs2) 
+  REMU: function (rd, rs1, rs2) {
+    setreg(rd, (getreg(rs2)) % (getreg(rs1)))
   },
 
   LRW: function (rd, rs1, rl, aq) {
@@ -239,12 +226,10 @@ export const instructions = {
     const result = Math.max(arg1, arg2)
     write32(getreg(rs1), result)
   },
-  // -------
 
   JALR: function (rd, rs1, imm) {
-    const addr = rs1 + imm & ~1
     setreg(rd, getpc() + 4)
-    setpc(getpc() + addr - 4)
+    setpc(getpc() + rs1 + imm)
   },
 
   //TODO: TEST THESE
@@ -299,7 +284,7 @@ export const instructions = {
   //TODO: TEST THIS
   JAL: function (rd, imm) {
     setreg(rd, getpc() + 4)
-    setpc(getpc() + imm - 4)
+    setpc(getpc() + imm)
   },
 
   CSRRW: function (rd, rs1, csr) {
@@ -344,6 +329,32 @@ export const instructions = {
     const displacement = BigInt(imm) << 12n;
     setreg(rd, Number((BigInt(getpc()) + displacement) & 0xFFFF_FFFFn))
   },
+
+  BEQ: function (rs1, rs2, imm) {
+    if (getreg(rs1) == getreg(rs2))
+      setpc((getpc()+4) + imm << 1) 
+  },
+  BNE: function (rs1, rs2, imm) {
+    if (getreg(rs1) != getreg(rs2))
+      setpc((getpc()+4) + imm << 1) 
+  },
+  BLT: function(rs1, rs2, imm) {
+    if ((getreg(rs1)|0) < (getreg(rs2)|0))
+      setpc((getpc()+4) + imm << 1) 
+  },
+  BLTU: function(rs1, rs2, imm) {
+    if (getreg(rs1) < getreg(rs2))
+      setpc((getpc()+4) + imm << 1) 
+  },
+  BGE: function(rs1, rs2, imm) {
+    if ((getreg(rs1)|0) >= (getreg(rs2)|0))
+      setpc((getpc()+4) + imm << 1) 
+  },
+  BGEU: function(rs1, rs2, imm) {
+    if (getreg(rs1) >= getreg(rs2))
+      setpc((getpc()+4) + imm << 1) 
+  },
+  
 }
 
 function cpuSteps(steps) {
