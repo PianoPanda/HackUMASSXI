@@ -9,6 +9,7 @@ function logWord(x, msg = "") {
     console.log(`${msg}0x${x.toString(16).padStart(8, 0)}`)
 }
 
+export let length = 0;
 export default function loadELF(elfData, startSymbolName = undefined) {
     if (typeof (elfData) !== "object" || elfData.constructor !== Uint8Array) throw new Error("Invalid input: loadELF only accepts Uint8Array");
     function getString(addr) {
@@ -99,6 +100,7 @@ export default function loadELF(elfData, startSymbolName = undefined) {
             //load into memory
             logWord(manif.dataSegment.length, "\t\tloaded length = ")
             manif.dataSegment.forEach((value, index) => memory[index + manif.sh_addr] = value)
+            length = Math.max(length, manif.sh_addr + manif.sh_size);
         }
     })
 
