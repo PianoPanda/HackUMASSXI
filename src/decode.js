@@ -1,3 +1,5 @@
+import { toBinary } from "./util";
+
 /**
  * Enum for types of instruction
  * @readonly
@@ -379,6 +381,7 @@ function gettype(opcode) {
     case 0b0000011:
     case 0b0010011:
     case 0b0001111:
+    case 0b1110011:
       return TYPES.I;
     //S-type
     case 0b0100011:
@@ -394,7 +397,6 @@ function gettype(opcode) {
     case 0b1101111:
       return TYPES.J
     //OTHER-type
-    case 0b1110011:
       return TYPES.OTHER
   }
 }
