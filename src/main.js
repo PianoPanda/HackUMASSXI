@@ -21,7 +21,9 @@ while(true && i--){
     //     logNear(registers[2])
     // }
 
-    cpuSteps(1);
+    cpuSteps(1, (a) => {
+        console.log("HERE", a)
+    });
 }
 } catch (exception){
     dump();
