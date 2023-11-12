@@ -29,11 +29,19 @@ const csrData = {
 const pc = new Uint32Array(1).fill(0);
 
 export function dump() {
+  const dumpStart = 0x00
+  const memRange = Array.from(memory).slice(dumpStart, dumpStart + 0x100);
+  const memBlock = Array(16).fill(1).map(() => []);
+  memRange.forEach((data,index) => {
+    memBlock[Math.floor(index / 16)].push(data)
+  })
   console.log(
     `====CORE DUMP====
 pc: 0x${toHex(Number(pc[0]))}
 registers: \n\t${Array.from(registers).map(x => toHex(x)).join('\n\t')}
-memory[0x00 - 0xFF]: ${Array.from(memory).slice(0, 0x100).map(x => toHex(x, 2)).join(' ')}
+memory [0x${toHex(dumpStart)} - 0x${toHex(dumpStart + 0xFF)}]: \n\t${memBlock.map(
+  row => row.map(x => toHex(x, 2)).join(' ')
+).join('\n\t')}
 ====END CORE DUMP====`
   )
 }
@@ -117,17 +125,17 @@ export const instructions = {
   MUL: function (rd, rs1, rs2) {
     setreg(rd, Number(BigInt.asIntN(32, BigInt(getreg(rs1)) * BigInt(getreg(rs2)))))
   },
-  SLL: function(rd, rs1, rs2) {
+  SLL: function (rd, rs1, rs2) {
     setreg(rd, getreg(rs1) << (getreg(rs2) & 0b11111))
   },
   MULH: function (rd, rs1, rs2) {
-    setreg(rd, Number(BigInt(getreg(rs1)|0) * BigInt(getreg(rs2)|0) >>> BigInt(32)))
+    setreg(rd, Number(BigInt(getreg(rs1) | 0) * BigInt(getreg(rs2) | 0) >>> BigInt(32)))
   },
   SLT: function (rd, rs1, rs2) {
-    setreg(rd, (getreg(rs1)|0) < (getreg(rs2)|0) ? 1 : 0)
+    setreg(rd, (getreg(rs1) | 0) < (getreg(rs2) | 0) ? 1 : 0)
   },
-  MULHSU: function(rd, rs1, rs2) {
-    setreg(rd, Number(BigInt(getreg(rs1)|0) * BigInt(getreg(rs2)) >>> BigInt(32)))
+  MULHSU: function (rd, rs1, rs2) {
+    setreg(rd, Number(BigInt(getreg(rs1) | 0) * BigInt(getreg(rs2)) >>> BigInt(32)))
   },
   SLTU: function (rd, rs1, rs2) {
     setreg(rd, getreg(rs1) < getreg(rs2) ? 1 : 0)
@@ -140,7 +148,7 @@ export const instructions = {
   },
   DIV: function (rd, rs1, rs2) { //signed division
     if (getreg(rs2) === 0) throw new Exception("Signed division by 0")
-    setreg(rd, (getreg(rs1)|0) / (getreg(rs2)|0))
+    setreg(rd, (getreg(rs1) | 0) / (getreg(rs2) | 0))
   },
   SRL: function (rd, rs1, rs2) {
     setreg(rd, getreg(rs1) >> (getreg(rs2) & 0b11111))
@@ -150,7 +158,7 @@ export const instructions = {
   },
   DIVU: function (rd, rs1, rs2) {
     if (getreg(rs2) === 0) {
-      setreg(rd, -1|0);
+      setreg(rd, -1 | 0);
     } else {
       setreg(rd, Math.trunc(getreg(rs1) / getreg(rs2)));
     }
@@ -159,7 +167,7 @@ export const instructions = {
     setreg(rd, getreg(rs1) | getreg(rs2))
   },
   REM: function (rd, rs1, rs2) {
-    setreg(rd, (getreg(rs2)|0) % (getreg(rs1)|0))
+    setreg(rd, (getreg(rs2) | 0) % (getreg(rs1) | 0))
   },
   AND: function (rd, rs1, rs2) {
     setreg(rd, getreg(rs1) & getreg(rs2))
@@ -343,29 +351,29 @@ export const instructions = {
 
   BEQ: function (rs1, rs2, imm) {
     if (getreg(rs1) == getreg(rs2))
-      setpc((getpc()+4) + imm << 1) 
+      setpc((getpc() + 4) + imm << 1)
   },
   BNE: function (rs1, rs2, imm) {
     if (getreg(rs1) != getreg(rs2))
-      setpc((getpc()+4) + imm << 1) 
+      setpc((getpc() + 4) + imm << 1)
   },
-  BLT: function(rs1, rs2, imm) {
-    if ((getreg(rs1)|0) < (getreg(rs2)|0))
-      setpc((getpc()+4) + imm << 1) 
+  BLT: function (rs1, rs2, imm) {
+    if ((getreg(rs1) | 0) < (getreg(rs2) | 0))
+      setpc((getpc() + 4) + imm << 1)
   },
-  BLTU: function(rs1, rs2, imm) {
+  BLTU: function (rs1, rs2, imm) {
     if (getreg(rs1) < getreg(rs2))
-      setpc((getpc()+4) + imm << 1) 
+      setpc((getpc() + 4) + imm << 1)
   },
-  BGE: function(rs1, rs2, imm) {
-    if ((getreg(rs1)|0) >= (getreg(rs2)|0))
-      setpc((getpc()+4) + imm << 1) 
+  BGE: function (rs1, rs2, imm) {
+    if ((getreg(rs1) | 0) >= (getreg(rs2) | 0))
+      setpc((getpc() + 4) + imm << 1)
   },
-  BGEU: function(rs1, rs2, imm) {
+  BGEU: function (rs1, rs2, imm) {
     if (getreg(rs1) >= getreg(rs2))
-      setpc((getpc()+4) + imm << 1) 
+      setpc((getpc() + 4) + imm << 1)
   },
-  
+
 }
 
 export function cpuSteps(steps) {
