@@ -46,6 +46,20 @@ test("ADD: (-1) + (-2)", () => {
   assert(getreg(3), 0xFFFF_FFFD) //todo
 })
 
+test("DIVU: suite", () => {
+  // 2 / 1 = 2
+  setreg(1, 2);
+  setreg(2, 1);
+  instructions.DIVU(3, 1, 2);
+  expect(getreg(3)).toBe(2); //todo
+
+  // Div by zero follows spec semantics
+  setreg(1, 2);
+  setreg(2, 0);
+  instructions.DIVU(3, 1, 2);
+  expect(getreg(3)).toBe((-1>>>0)); //todo
+})
+
 test("MUL: typical imput", () => {
   setreg(1, 4)
   setreg(2, 5)

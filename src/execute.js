@@ -138,8 +138,11 @@ export const instructions = {
     setreg(rd, getreg(rs1) >>> (getreg(rs2) & 0b11111))
   },
   DIVU: function (rd, rs1, rs2) {
-    if (rs2 === 0) throw new Exception("Unsigned division by 0")
-    setreg(rd, (getreg(rs1) / getreg(rs2))|0)
+    if (getreg(rs2) === 0) {
+      setreg(rd, -1|0);
+    } else {
+      setreg(rd, Math.trunc(getreg(rs1) / getreg(rs2)));
+    }
   },
   OR: function (rd, rs1, rs2) {
     setreg(rd, getreg(rs1) | getreg(rs2))
