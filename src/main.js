@@ -1,4 +1,4 @@
-import { cpuSteps, dump, getpc, getreg, logNear, registers, setpc, softDump } from "./execute";
+import { cpuSteps, dump, getpc, getreg, logNear, logReg, registers, setpc, softDump } from "./execute";
 import loadELF from "./elves";
 import * as fs from "fs"
 import { exit } from "process";
@@ -20,6 +20,7 @@ while(true){
     //     logNear(registers[2])
     // }
 
+    logReg('a0')
     cpuSteps(1);
 }
 } catch (exception){

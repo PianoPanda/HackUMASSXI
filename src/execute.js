@@ -146,6 +146,18 @@ export function getreg(n) {
 }
 
 /**
+ * Logs a specific register value
+ * @param {string} name 
+ */
+export function logReg(name) {
+  const reg = ABIspec.findIndex(x => x.includes(name))
+  if(reg === -1) throw new Error(`${name} is not a register`)
+  console.log(
+    `\t${name} = 0x${toHex(registers[reg])}`
+  )
+}
+
+/**
  * Sets the value in a register
  * @param {number} n
  * @param {uint32} val - what to set it to
@@ -407,6 +419,7 @@ export const instructions = {
   EBREAK: function () { },
 
   LUI: function (rd, imm) {
+    console.log(`0x${toHex(imm)}`)
     setreg(rd, Number(BigInt(imm) << 12n));
   },
 
