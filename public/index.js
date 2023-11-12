@@ -1,5 +1,5 @@
 import { disassembleElves } from "./src/disassemble.js"
-import loadElf from "./src/elves.js"
+import loadElf, { length } from "./src/elves.js"
 
 console.log("hi")
 
@@ -12,9 +12,13 @@ document.getElementById("upload").onclick = async function() {
   // const stuff = await disassemble(data)
   // document.getElementById("asm").innerHTML = stuff.join("<br>")
 
-  loadElf()
+  const buffer = await data.arrayBuffer().then(arr => {
+    return new Uint8Array(arr)
+  })
 
-  const stuff = disassemble(data)
+  loadElf(buffer, "main")
+
+  const stuff = disassembleElves(start, length)
   document.getElementById("asm").innerHTML = stuff.join("<br>")
   
 }
