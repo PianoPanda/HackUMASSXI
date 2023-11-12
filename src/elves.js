@@ -10,7 +10,7 @@ function logWord(x, msg = "") {
 }
 
 export let length = 0;
-export let test_base = 0;
+export let text_base = 0;
 export default function loadELF(elfData, startSymbolName = undefined) {
     if (typeof (elfData) !== "object" || elfData.constructor !== Uint8Array) throw new Error("Invalid input: loadELF only accepts Uint8Array");
     function getString(addr) {
@@ -108,7 +108,7 @@ export default function loadELF(elfData, startSymbolName = undefined) {
     const strTabSection = sectionManifList.find(manif => manif.name === ".strtab");
     const textSection = sectionManifList.find(manif => manif.name === ".text");
     length = textSection.sh_size
-    test_base = textSection.sh_addr
+    text_base = textSection.sh_addr
 
     const num_symbols = symTabSection.dataSegment.length / 16;
     logWord(num_symbols, "num_symbols = ")
