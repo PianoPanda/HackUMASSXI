@@ -1,6 +1,6 @@
 import { decode } from "./decode.js"
 import { read32, flushMemory } from "./ram.js"
-import { loadbin } from "./boot.js"
+import { loadbin } from "./load.js"
 
 let out
 
