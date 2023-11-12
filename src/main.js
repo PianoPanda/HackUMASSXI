@@ -4,7 +4,7 @@ import * as fs from "fs"
 import { exit } from "process";
 
 const elfData = new Uint8Array(fs.readFileSync(Bun.argv[2]))
-loadELF(elfData);
+loadELF(elfData, "main");
 
 console.log("\n\n\n\n")
 console.log("====BEGIN TRACE====")
