@@ -1,5 +1,8 @@
 testfileartifacts/riscv-gnu-toolchain/*
-testfileartifacts/test.*
+testfileartifacts/*.bin
+testfileartifacts/*.elf
+testfileartifacts/*.hex
+testfileartifacts/c_test.s
 
 # Based on https://raw.githubusercontent.com/github/gitignore/main/Node.gitignore
 

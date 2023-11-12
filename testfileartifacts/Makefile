@@ -4,17 +4,22 @@ install:
 	git submodule update --init
 	
 
-compile: test.c
-	riscv32-unknown-elf-gcc -O1 -nostartfiles test.c -o test.elf
-	make elftobin
+compile: c_test.c
+	riscv32-unknown-elf-gcc -O1 -nostartfiles c_test.c -S c_test.s
+	riscv32-unknown-elf-gcc -O1 -nostartfiles c_test.s -o c_test.elf
+	make c_elftobin
 
-assemble: test.s
-	riscv32-unknown-elf-gcc -O1 -nostartfiles test.s -o test.elf
-	make elftobin
+assemble: asm_test.s
+	riscv32-unknown-elf-gcc -O1 -nostartfiles asm_test.s -o asm_test.elf
+	make asm_elftobin
 
-elftobin: test.elf
-	riscv32-unknown-elf-objcopy -O binary test.elf test.bin
-	xxd -g 4 -c 4 test.bin > test.hex
+c_elftobin: c_test.elf
+	riscv32-unknown-elf-objcopy -O binary c_test.elf c_test.bin
+	xxd -g 4 -c 4 c_test.bin > c_test.hex
+
+asm_elftobin: asm_test.elf
+	riscv32-unknown-elf-objcopy -O binary asm_test.elf asm_test.bin
+	xxd -g 4 -c 4 asm_test.bin > asm_test.hex
 
 clean:
-	rm test.bin test.elf test.hex
+	rm c_test.s c_test.bin c_test.elf c_test.hex asm_test.bin asm_test.elf asm_test.hex
