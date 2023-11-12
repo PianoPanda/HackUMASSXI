@@ -9,6 +9,9 @@
 	.type	_start, @function
 _start:
 	# Instructions here
-	ret
+	add x0,x0,x0
+	li t0,1
+	li t1,2
+	add t2,t0,t1
 	.size	_start, .-_start
 	.ident	"GCC: (gc891d8dc23e) 13.2.0"

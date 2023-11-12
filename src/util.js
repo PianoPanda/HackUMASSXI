@@ -39,7 +39,7 @@ export function toBinary(value) {
  * @returns {string} 
  */
 export function toHex(value, len = 8) {
-    return format32(value).toString(16).padStart(len, 0);
+    return format32(value).toString(16).padStart(len, '0');
 }
 
 /**

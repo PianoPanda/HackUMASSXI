@@ -1,5 +1,6 @@
-import { read32, write32 } from "./ram.js"
-import { compuns, format32 } from "./util.js"
+import { decode } from "./decode.js";
+import { memory, read32, write32 } from "./ram.js"
+import { compuns, format32, toHex } from "./util.js"
 
 const registers = new Uint32Array(32).fill(0);
 const csrData = {
@@ -25,7 +26,16 @@ const csrData = {
   // Vendor ID
   [0xF11]: 0xff0ff0ff, // MRO: mvendorid [Extra Credit: make this the funny number]
 }
-const pc = Uint32Array(1).fill(0);
+const pc = new Uint32Array(1).fill(0);
+
+export function dump() {
+  console.log(
+    `====CORE DUMP====
+pc: ${toHex(Number(pc[0]))}
+registers: ${registers.map(x => toHex(Number(x), 8))}
+memory[0x00 - 0xFF]: ${memory.slice(0, 0x100).map(x => toHex(Number(x), 2))}`
+  )
+}
 
 function readCSR(csr) {
   if (!csr in csrData) throw new Error(`Attempted to read CSR 0x${toHex(csr, 3)}, which is not implemented`)
@@ -357,7 +367,7 @@ export const instructions = {
   
 }
 
-function cpuSteps(steps) {
+export function cpuSteps(steps) {
   // do CSR timer stuff
 
   // do timer interrupts if necessary
