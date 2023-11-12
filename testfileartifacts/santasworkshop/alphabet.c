@@ -1,3 +1,6 @@
+/**
+ * Alphabet
+*/
 int putchar(int c){
     asm volatile(
         "add a0,%0,x0;"
@@ -7,20 +10,13 @@ int putchar(int c){
     return 0;
     // asm (".word 0b100000000000_11111_001_00000_1110011");
 }
-
+void print_alpha(){
+    for(char c = 'A'; c <= 'Z'; c++) putchar(c);
+}
 void shutdown(){
     asm (".word 0x80105073"); //shutdown
 }
-
-void print_string(char *str){
-    while (*str)
-    {
-        putchar(*str);
-        str++;
-    }
-}
-
 int main() {
-    print_string("Hello World!");
+    print_alpha();
     shutdown();
 }
