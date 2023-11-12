@@ -74,6 +74,7 @@ export function softDump() {
     decode(read32(getpc()), debug_instruction)
   } catch (exception) {
     console.log(`Invalid pc: 0x${toHex(pc[0])}`)
+    throw exception
   }
 }
 
@@ -326,13 +327,13 @@ export const instructions = {
   },
 
   JALR: function (rd, rs1, imm) {
+    setreg(rd, getpc() + 4)
     setpc(((getreg(rs1) + imm) & ~1) - 4) //accounting for auto-increment of pc
     /*
       "The target address is obtained by adding the sign-extended
       12-bit I-immediate to the register rs1, then setting the
       least-significant bit of the result to zero."
     */
-    setreg(rd, getpc())
   },
 
   //TODO: TEST THESE
