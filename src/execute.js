@@ -29,11 +29,21 @@ const csrData = {
 }
 const pc = new Uint32Array(1).fill(0);
 
+/**
+ * Only prints pc and 
+ */
+export function softDump() {
+  try {
+    console.log(`[0x${toHex(pc[0])}]: ${toBinary(read32(pc[0]))}`)
+  } catch (exception) {
+    console.log(`Invalid pc: 0x${toHex(pc[0])}`)
+  }
+}
 export function dump() {
   const dumpStart = 0x00
   const memRange = Array.from(memory).slice(dumpStart, dumpStart + 0x100);
   const memBlock = Array(16).fill(1).map(() => []);
-  memRange.forEach((data,index) => {
+  memRange.forEach((data, index) => {
     memBlock[Math.floor(index / 16)].push(data)
   })
   console.log(
@@ -42,8 +52,8 @@ pc: 0x${toHex(pc[0])}
 current instruction: ${toBinary(read32(getpc()))}
 registers: \n\t${Array.from(registers).map(x => toHex(x)).join('\n\t')}
 memory [0x${toHex(dumpStart)} - 0x${toHex(dumpStart + 0xFF)}]: \n\t${memBlock.map(
-  row => row.map(x => toHex(x, 2)).join(' ')
-).join('\n\t')}
+      row => row.map(x => toHex(x, 2)).join(' ')
+    ).join('\n\t')}
 ====END CORE DUMP====`
   )
 }
