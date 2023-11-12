@@ -31,9 +31,10 @@ const pc = new Uint32Array(1).fill(0);
 export function dump() {
   console.log(
     `====CORE DUMP====
-pc: ${toHex(Number(pc[0]))}
-registers: ${registers.map(x => toHex(Number(x), 8))}
-memory[0x00 - 0xFF]: ${memory.slice(0, 0x100).map(x => toHex(Number(x), 2))}`
+pc: 0x${toHex(Number(pc[0]))}
+registers: \n\t${Array.from(registers).map(x => toHex(x)).join('\n\t')}
+memory[0x00 - 0xFF]: ${Array.from(memory).slice(0, 0x100).map(x => toHex(x, 2)).join(' ')}
+====END CORE DUMP====`
   )
 }
 
