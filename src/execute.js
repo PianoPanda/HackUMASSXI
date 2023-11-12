@@ -148,7 +148,11 @@ export const instructions = {
   },
   DIV: function (rd, rs1, rs2) { //signed division
     if (getreg(rs2) === 0) throw new Exception("Signed division by 0")
+<<<<<<< Updated upstream
     setreg(rd, (getreg(rs1) >>> 0) / (getreg(rs2) >>> 0) >>> 0)
+=======
+    setreg(rd, ((getreg(rs1) << 0) / (getreg(rs2) << 0)) >>> 0)
+>>>>>>> Stashed changes
   },
   SRL: function (rd, rs1, rs2) {
     setreg(rd, getreg(rs1) >> (getreg(rs2) & 0b11111))

@@ -1,6 +1,6 @@
 import assert from "assert";
 import { getreg, setreg, instructions, setpc } from "./execute.js"
-import { test } from "bun:test";
+import { expect, test } from "bun:test";
 import { read32, write32 } from "./ram.js";
 import { toHex } from "./util.js";
 
@@ -44,6 +44,29 @@ test("ADD: (-1) + (-2)", () => {
   setreg(2, 0xFFFF_FFFE)
   instructions.ADD(3, 1, 2);
   assert(getreg(3), 0xFFFF_FFFD) //todo
+})
+
+test("DIV: zero", () => {
+  setreg(1, 2)
+  setreg(2, 0)
+  expect(() => instructions.DIV(_, 1, 2)).toThrow()
+})
+
+test("DIV: regular division", () => {
+  setreg(1, 2)
+  setreg(2, 1)
+  instructions.DIV(3, 1, 2)
+  expect(getreg(3)).toBe(2)
+
+  setreg(1, 10)
+  setreg(2, 3)
+  instructions.DIV(3, 1, 2)
+  expect(getreg(3)).toBe(3)
+
+  setreg(1, -99)
+  setreg(2, 3)
+  instructions.DIV(3, 1, 2)
+  expect(getreg(3)).toBe(-33)
 })
 
 test("DIVU: suite", () => {
