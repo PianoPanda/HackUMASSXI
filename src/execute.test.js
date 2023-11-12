@@ -3,6 +3,7 @@ import { getreg, setreg, instructions, setpc } from "./execute.js"
 import { expect, test } from "bun:test";
 import { read32, write32 } from "./ram.js";
 import { toHex } from "./util.js";
+import { type } from "os";
 
 const testExecutable = new Uint8Array(
   new Uint32Array([
@@ -66,7 +67,7 @@ test("DIV: regular division", () => {
   setreg(1, -99)
   setreg(2, 3)
   instructions.DIV(3, 1, 2)
-  expect(getreg(3)).toBe(-33)
+  expect(getreg(3) | 0).toBe(-33)
 })
 
 test("DIVU: suite", () => {
