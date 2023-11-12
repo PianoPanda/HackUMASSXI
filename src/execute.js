@@ -1,5 +1,5 @@
 import { decode } from "./decode.js";
-import { instructions as debug_instruction}from "./disassemble.js";
+import { instructions as debug_instruction } from "./disassemble.js";
 import { RAM_SIZE, memory, read32, write32 } from "./ram.js"
 import { compuns, format32, toBinary, toHex } from "./util.js"
 
@@ -31,6 +31,40 @@ const csrData = {
 }
 const pc = new Uint32Array(1).fill(0);
 
+const ABIspec = [
+  "zero",
+  "ra",
+  "sp",
+  "gp",
+  "tp",
+  "t0",
+  "t1",
+  "t2",
+  "s0|fp",
+  "s1",
+  "a0",
+  "a1",
+  "a2",
+  "a3",
+  "a4",
+  "a5",
+  "a6",
+  "a7",
+  "s2",
+  "s3",
+  "s4",
+  "s5",
+  "s6",
+  "s7",
+  "s8",
+  "s9",
+  "s10",
+  "s11",
+  "t3",
+  "t4",
+  "t5",
+  "t6",
+]
 /**
  * Only prints pc and 
  */
@@ -43,8 +77,8 @@ export function softDump() {
   }
 }
 
-export function logNear(address){
-  for(let addr = Math.max(0, address - 24); addr <= Math.min(RAM_SIZE - 4, address + 24); addr+=4){
+export function logNear(address) {
+  for (let addr = Math.max(0, address - 24); addr <= Math.min(RAM_SIZE - 4, address + 24); addr += 4) {
     console.log(`[0x${toHex(addr)}]: 0x${toHex(read32(addr))}`)
   }
 }
@@ -56,17 +90,20 @@ export function dump() {
   memRange.forEach((data, index) => {
     memBlock[Math.floor(index / 16)].push(data)
   })
-  console.log(
-    `====CORE DUMP====
-pc: 0x${toHex(pc[0])}
-current instruction: ${toBinary(read32(getpc()))}`);
-console.log(`
-registers: \n\t${Array.from(registers).map(x => toHex(x)).join('\n\t')}
-memory [0x${toHex(dumpStart)} - 0x${toHex(dumpStart + 0xFF)}]: \n\t${memBlock.map(
-      row => row.map(x => toHex(x, 2)).join(' ')
-    ).join('\n\t')}
-====END CORE DUMP====\n`
-  )
+
+  console.log("====CORE DUMP====");
+  console.log(`pc: 0x${toHex(pc[0])}`);
+  console.log(`current instruction: ${toBinary(read32(getpc()))}`);
+
+  console.log("registers:");
+  Array.from(registers).forEach((register, rindex) => {
+    console.log(`\t${ABIspec[rindex].padEnd(8, ' ')}0x${toHex(register)}`);
+  })
+
+  console.log(`memory [0x${toHex(dumpStart)} - 0x${toHex(dumpStart + 0xFF)}]:`);
+  memBlock.forEach(row => console.log(`\t\t${row.map(x => toHex(x, 2)).join(' ')}`));
+
+  console.log("====END CORE DUMP====\n");
 }
 
 function readCSR(csr) {
@@ -273,7 +310,7 @@ export const instructions = {
   //TODO: TEST THIS
   JAL: function (rd, imm) {
     setreg(rd, getpc() + 4)
-    setpc(getpc() + imm)
+    setpc(getpc() + imm - 4)
   },
 
   JALR: function (rd, rs1, imm) {
