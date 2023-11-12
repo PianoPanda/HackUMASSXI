@@ -8,6 +8,7 @@ document.getElementById("upload").onclick = async function() {
   let entry = document.getElementById("file").files[0];
   console.log('doupload',entry,data)
 
-  await disassemble(data)
+  const stuff = await disassemble(data)
+  document.getElementById("asm").innerHTML = stuff.join("<br>")
 }
 

@@ -2,97 +2,112 @@ import { decode } from "./decode.js"
 import { read32, flushMemory } from "./ram.js"
 import { loadbin } from "./boot.js"
 
+let out
+
+function respretty(name, ...k) {
+  return function(...v) {
+    const res = []
+    for (let i=0; i<v.length; i++)
+      res.push(`${k[i]}: ${v[i]}`)
+
+    out = `${name} ${res.join(", ")}`
+  }
+}
+
 export const instructions = {
-  SLLI: function (rd, rs1, shamt) { console.log("SLLI", "rd", rd, "rs1", rs1, "shamt", shamt) },
-  SRLI: function (rd, rs1, shamt) { console.log("SRLI", "rd", rd, "rs1", rs1, "shamt", shamt) },
-  SRAI: function (rd, rs1, shamt) { console.log("SRAI", "rd", rd, "rs1", rs1, "shamt", shamt) },
+  SLLI: respretty("SLLI", "rd", "rs1", "shamt"),
+  SRLI: respretty("SRLI", "rd", "rs1", "shamt"),
+  SRAI: respretty("SRAI", "rd", "rs1", "shamt"),
 
-  ADD: function (rd, rs1, rs2) { console.log("ADD", "rd", rd, "rs1", rs1, "rs2", rs2) },
-  SUB: function (rd, rs1, rs2) { console.log("SUB", "rd", rd, "rs1", rs1, "rs2", rs2) },
-  MUL: function (rd, rs1, rs2) { console.log("MUL", "rd", rd, "rs1", rs1, "rs2", rs2) },
-  SLL: function(rd, rs1, rs2) { console.log("SLL", "rd", rd, "rs1", rs1, "rs2", rs2) },
-  MULH: function (rd, rs1, rs2) { console.log("MULH", "rd", rd, "rs1", rs1, "rs2", rs2) },
-  SLT: function (rd, rs1, rs2) { console.log("SLT", "rd", rd, "rs1", rs1, "rs2", rs2) },
-  MULHSU: function(rd, rs1, rs2) { console.log("MULHSU", "rd", rd, "rs1", rs1, "rs2", rs2) },
-  SLTU: function (rd, rs1, rs2) { console.log("SLTU", "rd", rd, "rs1", rs1, "rs2", rs2) },
-  MULHU: function (rd, rs1, rs2) { console.log("MULHU", "rd", rd, "rs1", rs1, "rs2", rs2) },
-  XOR: function (rd, rs1, rs2) { console.log("XOR", "rd", rd, "rs1", rs1, "rs2", rs2) },
-  DIV: function (rd, rs1, rs2) { console.log("DIV", "rd", rd, "rs1", rs1, "rs2", rs2) },
-  SRL: function (rd, rs1, rs2) { console.log("SRL", "rd", rd, "rs1", rs1, "rs2", rs2) },
-  SRA: function (rd, rs1, rs2) { console.log("SRA", "rd", rd, "rs1", rs1, "rs2", rs2) },
-  DIVU: function (rd, rs1, rs2) { console.log("DIVU", "rd", rd, "rs1", rs1, "rs2", rs2) },
-  OR: function (rd, rs1, rs2) { console.log("OR", "rd", rd, "rs1", rs1, "rs2", rs2) },
-  REM: function (rd, rs1, rs2) { console.log("REM", "rd", rd, "rs1", rs1, "rs2", rs2) },
-  AND: function (rd, rs1, rs2) { console.log("AND", "rd", rd, "rs1", rs1, "rs2", rs2) },
-  REMU: function (rd, rs1, rs2) { console.log("REMU", "rd", rd, "rs1", rs1, "rs2", rs2) },
+  ADD: respretty("ADD", "rd", "rs1", "rs2"),
+  SUB: respretty("SUB", "rd", "rs1", "rs2"),
+  MUL: respretty("MUL", "rd", "rs1", "rs2"),
+  SLL: respretty("SLL", "rd", "rs1", "rs2"),
+  MULH: respretty("MULH", "rd", "rs1", "rs2"),
+  SLT: respretty("SLT", "rd", "rs1", "rs2"),
+  MULHSU: respretty("MULHSU", "rd", "rs1", "rs2"),
+  SLTU: respretty("SLTU", "rd", "rs1", "rs2"),
+  MULHU: respretty("MULHU", "rd", "rs1", "rs2"),
+  XOR: respretty("XOR", "rd", "rs1", "rs2"),
+  DIV: respretty("DIV", "rd", "rs1", "rs2"),
+  SRL: respretty("SRL", "rd", "rs1", "rs2"),
+  SRA: respretty("SRA", "rd", "rs1", "rs2"),
+  DIVU: respretty("DIVU", "rd", "rs1", "rs2"),
+  OR: respretty("OR", "rd", "rs1", "rs2"),
+  REM: respretty("REM", "rd", "rs1", "rs2"),
+  AND: respretty("AND", "rd", "rs1", "rs2"),
+  REMU: respretty("REMU", "rd", "rs1", "rs2"),
 
-  LRW: function (rd, rs1, rl, aq) { console.log("LRW", "rd", rd, "rs1", rs1, "rl", rl, "aq", aq) },
-  SCW: function (rd, rs1, rs2, rl, aq) { console.log("SCW", "rd", rd, "rs1", rs1, "rs2", rs2, "rl", rl, "aq", aq) },
-  AMOSWAPW: function (rd, rs1, rs2, rl, aq) { console.log("AMOSWAPW", "rd", rd, "rs1", rs1, "rs2", rs2, "rl", rl, "aq", aq) },
-  AMOADDW: function (rd, rs1, rs2, rl, aq) { console.log("AMOADDW", "rd", rd, "rs1", rs1, "rs2", rs2, "rl", rl, "aq", aq) },
-  AMOXORW: function (rd, rs1, rs2, rl, aq) { console.log("AMOXORW", "rd", rd, "rs1", rs1, "rs2", rs2, "rl", rl, "aq", aq) },
-  AMOANDW: function (rd, rs1, rs2, rl, aq) { console.log("AMOANDW", "rd", rd, "rs1", rs1, "rs2", rs2, "rl", rl, "aq", aq) },
-  AMOORW: function (rd, rs1, rs2, rl, aq) { console.log("AMOORW", "rd", rd, "rs1", rs1, "rs2", rs2, "rl", rl, "aq", aq) },
-  AMOMINW: function (rd, rs1, rs2, rl, aq) { console.log("AMOMINW", "rd", rd, "rs1", rs1, "rs2", rs2, "rl", rl, "aq", aq) },
-  AMOMAXW: function (rd, rs1, rs2, rl, aq) { console.log("AMOMAXW", "rd", rd, "rs1", rs1, "rs2", rs2, "rl", rl, "aq", aq) },
-  AMOMINUW: function (rd, rs1, rs2, rl, aq) { console.log("AMOMINUW", "rd", rd, "rs1", rs1, "rs2", rs2, "rl", rl, "aq", aq) },
-  AMOMAXUW: function (rd, rs1, rs2, rl, aq) { console.log("AMOMAXUW", "rd", rd, "rs1", rs1, "rs2", rs2, "rl", rl, "aq", aq) },
+  LRW: respretty("LRW", "rd", "rs1", "rl", "aq"),
+  SCW: respretty("SCW", "rd", "rs1", "rs2", "rl", "aq"),
+  AMOSWAPW: respretty("AMOSWAPW", "rd", "rs1", "rs2", "rl", "aq"),
+  AMOADDW: respretty("AMOADDW", "rd", "rs1", "rs2", "rl", "aq"),
+  AMOXORW: respretty("AMOXORW", "rd", "rs1", "rs2", "rl", "aq"),
+  AMOANDW: respretty("AMOANDW", "rd", "rs1", "rs2", "rl", "aq"),
+  AMOORW: respretty("AMOORW", "rd", "rs1", "rs2", "rl", "aq"),
+  AMOMINW: respretty("AMOMINW", "rd", "rs1", "rs2", "rl", "aq"),
+  AMOMAXW: respretty("AMOMAXW", "rd", "rs1", "rs2", "rl", "aq"),
+  AMOMINUW: respretty("AMOMINUW", "rd", "rs1", "rs2", "rl", "aq"),
+  AMOMAXUW: respretty("AMOMAXUW", "rd", "rs1", "rs2", "rl", "aq"),
 
-  JALR: function (rd, rs1, imm) { console.log("JALR", "rd", rd, "rs1", rs1, "imm", imm) },
-
-  //TODO: TEST THESE
-  LB: function (rd, rs1, imm) { console.log("LB", "rd", rd, "rs1", rs1, "imm", imm) },
-  LH: function (rd, rs1, imm) { console.log("LH", "rd", rd, "rs1", rs1, "imm", imm) },
-  LW: function (rd, rs1, imm) { console.log("LW", "rd", rd, "rs1", rs1, "imm", imm) },
-  LBU: function (rd, rs1, imm) { console.log("LBU", "rd", rd, "rs1", rs1, "imm", imm) },
-  LHU: function (rd, rs1, imm) { console.log("LHU", "rd", rd, "rs1", rs1, "imm", imm) },
+  JALR: respretty("JALR", "rd", "rs1", "imm"),
 
   //TODO: TEST THESE
-  SB: function (rs1, rs2, imm) { console.log("SB", "rs1", rs1, "rs2", rs2, "imm", imm) },
-  SH: function (rs1, rs2, imm) { console.log("SH", "rs1", rs1, "rs2", rs2, "imm", imm) },
-  SW: function (rs1, rs2, imm) { console.log("SW", "rs1", rs1, "rs2", rs2, "imm", imm) },
+  LB: respretty("LB", "rd", "rs1", "imm"),
+  LH: respretty("LH", "rd", "rs1", "imm"),
+  LW: respretty("LW", "rd", "rs1", "imm"),
+  LBU: respretty("LBU", "rd", "rs1", "imm"),
+  LHU: respretty("LHU", "rd", "rs1", "imm"),
 
-  ADDI: function (rd, rs1, imm) { console.log("ADDI", "rd", rd, "rs1", rs1, "imm", imm) },
-  STLI: function (rd, rs1, imm) { console.log("STLI", "rd", rd, "rs1", rs1, "imm", imm) },
-  SLTIU: function (rd, rs1, imm) { console.log("SLTIU", "rd", rd, "rs1", rs1, "imm", imm) },
-  XORI: function (rd, rs1, imm) { console.log("XORI", "rd", rd, "rs1", rs1, "imm", imm) },
-  ORI: function (rd, rs1, imm) { console.log("ORI", "rd", rd, "rs1", rs1, "imm", imm) },
-  ANDI: function (rd, rs1, imm) { console.log("ANDI", "rd", rd, "rs1", rs1, "imm", imm) },
+  //TODO: TEST THESE
+  SB: respretty("SB", "rs1", "rs2", "imm"),
+  SH: respretty("SH", "rs1", "rs2", "imm"),
+  SW: respretty("SW", "rs1", "rs2", "imm"),
 
-  FENCEIL: function() { console.log("FENCEIL") },
-  FENCEIL: function () { console.log("FENCEIL") },
+  ADDI: respretty("ADDI", "rd", "rs1", "imm"),
+  STLI: respretty("STLI", "rd", "rs1", "imm"),
+  SLTIU: respretty("SLTIU", "rd", "rs1", "imm"),
+  XORI: respretty("XORI", "rd", "rs1", "imm"),
+  ORI: respretty("ORI", "rd", "rs1", "imm"),
+  ANDI: respretty("ANDI", "rd", "rs1", "imm"),
+
+  FENCEIL: respretty("FENCEIL"),
+  FENCEIL: respretty("FENCEIL"),
 
   //TODO: TEST THIS
-  JAL: function (rd, imm) { console.log("JAL", "rd", rd, "imm", imm) },
+  JAL: respretty("JAL", "rd", "imm"),
 
-  CSRRW: function (rd, rs1, csr) { console.log("CSRRW", "rd", rd, "rs1", rs1, "csr", csr) },
-  CSRRS: function (rd, rs1, csr) { console.log("CSRRS", "rd", rd, "rs1", rs1, "csr", csr) },
-  CSRRC: function (rd, rs1, csr) { console.log("CSRRC", "rd", rd, "rs1", rs1, "csr", csr) },
-  CSRRWI: function (rd, uimm, csr) { console.log("CSRRWI", "rd", rd, "uimm", uimm, "csr", csr) },
-  CSRRSI: function (rd, uimm, csr) { console.log("CSRRSI", "rd", rd, "uimm", uimm, "csr", csr) },
-  CSRRCI: function (rd, uimm, csr) { console.log("CSRRCI", "rd", rd, "uimm", uimm, "csr", csr) },
+  CSRRW: respretty("CSRRW", "rd", "rs1", "csr"),
+  CSRRS: respretty("CSRRS", "rd", "rs1", "csr"),
+  CSRRC: respretty("CSRRC", "rd", "rs1", "csr"),
+  CSRRWI: respretty("CSRRWI", "rd", "uimm", "csr"),
+  CSRRSI: respretty("CSRRSI", "rd", "uimm", "csr"),
+  CSRRCI: respretty("CSRRCI", "rd", "uimm", "csr"),
 
-  ECALL: function() { console.log("ECALL") },
-  EBREAK: function () { console.log("EBREAK")  },
+  ECALL: respretty("ECALL"),
+  EBREAK: respretty("EBREAK"),
 
-  LUI: function (rd, imm) { console.log("LUI", "rd", rd, "imm", imm) },
+  LUI: respretty("LUI", "rd", "imm"),
 
-  AUIPC: function (rd, imm) { console.log("AUIPC", "rd", rd, "imm", imm) },
+  AUIPC: respretty("AUIPC", "rd", "imm"),
 
-  BEQ: function (rs1, rs2, imm) { console.log("BEQ", "rs1", rs1, "rs2", rs2, "imm", imm) },
-  BNE: function (rs1, rs2, imm) { console.log("BNE", "rs1", rs1, "rs2", rs2, "imm", imm) },
-  BLT: function(rs1, rs2, imm) { console.log("BLT", "rs1", rs1, "rs2", rs2, "imm", imm) },
-  BLTU: function(rs1, rs2, imm) { console.log("BLTU", "rs1", rs1, "rs2", rs2, "imm", imm) },
-  BGE: function(rs1, rs2, imm) { console.log("BGE", "rs1", rs1, "rs2", rs2, "imm", imm) },
-  BGEU: function(rs1, rs2, imm) { console.log("BGEU", "rs1", rs1, "rs2", rs2, "imm", imm) },
+  BEQ: respretty("BEQ", "rs1", "rs2", "imm"),
+  BNE: respretty("BNE", "rs1", "rs2", "imm"),
+  BLT: respretty("BLT", "rs1", "rs2", "imm"),
+  BLTU: respretty("BLTU", "rs1", "rs2", "imm"),
+  BGE: respretty("BGE", "rs1", "rs2", "imm"),
+  BGEU: respretty("BGEU", "rs1", "rs2", "imm"),
  }
 
 export async function disassemble(path) {
   flushMemory()
+  const res = []
   const num = await loadbin(path)
-  for (let i=0; i<num; i++) {
+  for (let i=0; i<num/4; i++) {
     decode(read32(i*4), instructions)
+    res.push(out)
   }
-  
+
+  return res
 }
 
