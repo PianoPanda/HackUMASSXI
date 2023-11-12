@@ -1,15 +1,17 @@
-import { loadbin } from "./loadlocal";
 import { cpuSteps, dump, getpc, getreg, logNear, registers, setpc, softDump } from "./execute";
-import { toHex } from "./util";
+import loadELF from "./elves";
+import * as fs from "fs"
+import { exit } from "process";
 
-await loadbin(Bun.argv[2]);
+const elfData = new Uint8Array(fs.readFileSync(Bun.argv[2]))
+loadELF(elfData);
+
 console.log("\n\n\n\n")
 console.log("====BEGIN TRACE====")
-setpc(0x148) //Start location
 try{
 while(true){
     // console.log()
-    // softDump();
+    softDump();
     // console.log(toHex(registers[1]))
     // switch(getpc()){
     //     case 0x10c:

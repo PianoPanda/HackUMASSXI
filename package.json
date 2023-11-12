@@ -11,7 +11,7 @@
   "scripts": {
     "make:c": "cd testfileartifacts && make compile",
     "make:asm": "cd testfileartifacts && make assemble",
-    "boot":"bun make:c && bun run src/main.js testfileartifacts/c_test.bin"
+    "boot":"bun make:c && bun run src/main.js testfileartifacts/c_test.elf"
   },
   "devDependencies": {
     "bun-types": "^0.5.0"

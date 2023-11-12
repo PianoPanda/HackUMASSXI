@@ -16,7 +16,7 @@ assemble: asm_test.s
 c_elftobin: c_test.elf
 	riscv32-unknown-elf-objcopy -O binary c_test.elf c_test.bin
 	xxd -g 4 -c 4 c_test.bin > c_test.hex
-	riscv32-unknown-elf-objdump -m riscv:rv32 -b binary -D c_test.bin > c_test.dump
+	riscv32-unknown-elf-objdump -d c_test.elf > c_test.dump
 
 asm_elftobin: asm_test.elf
 	riscv32-unknown-elf-objcopy -O binary asm_test.elf asm_test.bin
