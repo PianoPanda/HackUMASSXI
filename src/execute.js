@@ -223,12 +223,10 @@ export const instructions = {
     const result = Math.max(arg1, arg2)
     write32(getreg(rs1), result)
   },
-  // -------
 
   JALR: function (rd, rs1, imm) {
-    const addr = rs1 + imm & ~1
     setreg(rd, getpc() + 4)
-    setpc(getpc() + addr - 4)
+    setpc(getpc() + rs1 + imm)
   },
 
   //TODO: TEST THESE
@@ -283,7 +281,7 @@ export const instructions = {
   //TODO: TEST THIS
   JAL: function (rd, imm) {
     setreg(rd, getpc() + 4)
-    setpc(getpc() + imm - 4)
+    setpc(getpc() + imm)
   },
 
   CSRRW: function (rd, rs1, csr) {
