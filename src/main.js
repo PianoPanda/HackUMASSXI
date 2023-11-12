@@ -1,4 +1,4 @@
-import { loadbin } from "./boot";
+import { loadbin } from "./loadlocal";
 import { cpuSteps, dump, getpc, getreg, logNear, registers, setpc, softDump } from "./execute";
 import { toHex } from "./util";
 

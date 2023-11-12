@@ -3,9 +3,6 @@
   "version": "1.0.0",
   "description": "This is the repository for a HackUMASS XI project from November 10, 2023 to November 12, 2023.",
   "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "author": "",
   "license": "ISC",
   "dependencies": {
