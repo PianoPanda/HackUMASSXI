@@ -419,8 +419,7 @@ export const instructions = {
   EBREAK: function () { },
 
   LUI: function (rd, imm) {
-    console.log(`0x${toHex(imm)}`)
-    setreg(rd, Number(BigInt(imm) << 12n));
+    setreg(rd, imm);
   },
 
   AUIPC: function (rd, imm) {
