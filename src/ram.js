@@ -1,4 +1,4 @@
-export const RAM_SIZE = 1024 * 1024;
+export const RAM_SIZE = Math.pow(2, 27);
 export const memory = new Uint8Array(RAM_SIZE);
 
 /**

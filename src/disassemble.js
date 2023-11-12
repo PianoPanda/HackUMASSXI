@@ -3,7 +3,7 @@ import { read32, flushMemory } from "./ram"
 import { loadbin } from "./boot"
 import { toBinary } from "./util"
 
-const instructions = {
+export const instructions = {
   SLLI: function (rd, rs1, shamt) { console.log("SLLI", "rd", rd, "rs1", rs1, "shamt", shamt) },
   SRLI: function (rd, rs1, shamt) { console.log("SRLI", "rd", rd, "rs1", rs1, "shamt", shamt) },
   SRAI: function (rd, rs1, shamt) { console.log("SRAI", "rd", rd, "rs1", rs1, "shamt", shamt) },

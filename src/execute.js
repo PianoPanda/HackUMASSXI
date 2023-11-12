@@ -1,4 +1,5 @@
 import { decode } from "./decode.js";
+import { instructions as debug_instruction}from "./disassemble.js";
 import { RAM_SIZE, memory, read32, write32 } from "./ram.js"
 import { compuns, format32, toBinary, toHex } from "./util.js"
 
@@ -34,7 +35,8 @@ const pc = new Uint32Array(1).fill(0);
  */
 export function softDump() {
   try {
-    console.log(`[0x${toHex(pc[0])}]: ${toBinary(read32(pc[0]))}`)
+    console.log(`[0x${toHex(pc[0])}]: ${toBinary(read32(pc[0]))}}`);
+    decode(read32(getpc()), debug_instruction)
   } catch (exception) {
     console.log(`Invalid pc: 0x${toHex(pc[0])}`)
   }
@@ -49,7 +51,9 @@ export function dump() {
   console.log(
     `====CORE DUMP====
 pc: 0x${toHex(pc[0])}
-current instruction: ${toBinary(read32(getpc()))}
+current instruction: ${toBinary(read32(getpc()))}`);
+decode(read32(getpc()), debug_instruction);
+console.log(`
 registers: \n\t${Array.from(registers).map(x => toHex(x)).join('\n\t')}
 memory [0x${toHex(dumpStart)} - 0x${toHex(dumpStart + 0xFF)}]: \n\t${memBlock.map(
       row => row.map(x => toHex(x, 2)).join(' ')
