@@ -65,7 +65,7 @@ export const instructions = {
   SW: respretty("SW", "rs1", "rs2", "imm"),
 
   ADDI: respretty("ADDI", "rd", "rs1", "imm"),
-  STLI: respretty("STLI", "rd", "rs1", "imm"),
+  SLTI: respretty("SLTI", "rd", "rs1", "imm"),
   SLTIU: respretty("SLTIU", "rd", "rs1", "imm"),
   XORI: respretty("XORI", "rd", "rs1", "imm"),
   ORI: respretty("ORI", "rd", "rs1", "imm"),
