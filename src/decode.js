@@ -1,5 +1,3 @@
-import { toBinary } from "./util";
-
 /**
  * Enum for types of instruction
  * @readonly
