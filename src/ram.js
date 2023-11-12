@@ -35,7 +35,6 @@ export function write32(address, data) {
       `Illegal address for 32 bit write: 0x${address.toString(16)}`
     );
 
-  console.log((data >> 0) & 0xff, (data >> 8) & 0xff, (data >> 16) & 0xff, (data >> 24) & 0xff)
   memory[address + 0] = (data >> 0) & 0xff;
   memory[address + 1] = (data >> 8) & 0xff;
   memory[address + 2] = (data >> 16) & 0xff;

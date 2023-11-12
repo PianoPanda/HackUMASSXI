@@ -77,21 +77,6 @@ export function decode(op, i) {
         const funct7A = bitsfrom(op, 27, 5)
 
         switch (opcode) {
-          case 0b0010011: 
-            switch (funct3) {
-              case 0b001: i.SLLI(rd, rs1, shamt); break
-              case 0b101:
-                switch (funct7) {
-                  case 0b0000000: i.SRLI(rd, rs1, shamt); break
-                  case 0b0100000: i.SRAI(rd, rs1, shamt); break
-                  default:
-                    throw new Error(`SRLI or SRAI wrong ${op.toString(16)}`)
-                }
-                break
-              default: 
-                throw new Error(`Illegal func for instruction ${op.toString(16)}`)
-            }
-            break;
           case 0b0110011:
             switch (funct3) {
               case 0b000:
@@ -166,7 +151,7 @@ export function decode(op, i) {
             break;
           case 0b0101111: 
             switch(funct7A) {
-              case 0b00010: i.LRW(rd, rs1, rl, aq); break //rs2 is 00000
+              case 0b00010: i.LRW(rd, rs1, rl, aq); break
               case 0b00011: i.SCW(rd, rs1, rs2, rl, aq); break
               case 0b00001: i.AMOSWAPW(rd, rs1, rs2, rl, aq); break
               case 0b00000: i.AMOADDW(rd, rs1, rs2, rl, aq); break
@@ -192,6 +177,10 @@ export function decode(op, i) {
         const func3 = bitsfrom(op, 12, 3); 
         const rs1 = bitsfrom(op, 15, 5);
         const imm = bitsfrom(op, 20, 12) << 20 >> 20;
+
+        //SRLI SRAI
+        const funct7 = bitsfrom(op, 25, 7)
+        const shamt = bitsfrom(op, 20, 5)
       
         switch (opcode) {
           case 0b1100111:
@@ -200,6 +189,7 @@ export function decode(op, i) {
               default:
                 throw new Error(`Illegal func for instruction ${op.toString(16)}`)
             }
+            break
           case 0b0000011:
             switch (func3) {
               case 0b000: i.LB(rd, rs1, imm); break
@@ -218,23 +208,50 @@ export function decode(op, i) {
               case 0b011: i.SLTIU(rd, rs1, imm); break
               case 0b100: i.XORI(rd, rs1, imm); break
               case 0b110: i.ORI(rd, rs1, imm); break
-              case 0b111: i.ANDI(rd, rs1, imm); default:
-                throw new Error(`Illegal func for instruction ${op.toString(16)}`)
-            }
-          //FENCE.I it's a noop I guess?
-          case 0b0001111: i.FENCEI(); break
-          case 0b1110011: {
-            switch (func3) {
-              case 0b001: i.CSRRW(rd, rs1, imm); break
-              case 0b010: i.CSRRS(rd, rs1, imm); break
-              case 0b011: i.CSRRC(rd, rs1, imm); break
-              case 0b101: i.CSRRWI(rd, rs1, imm); break
-              case 0b110: i.CSRRSI(rd, rs1, imm); break
-              case 0b111: i.CSRRCI(rd, rs1, imm); break
+              case 0b111: i.ANDI(rd, rs1, imm);
+              case 0b001: i.SLLI(rd, rs1, shamt); break
+              case 0b101:
+                switch (funct7) {
+                  case 0b0000000: i.SRLI(rd, rs1, shamt); break
+                  case 0b0100000: i.SRAI(rd, rs1, shamt); break
+                  default:
+                    throw new Error(`SRLI or SRAI wrong ${op.toString(16)}`)
+                }
+                break
               default:
                 throw new Error(`Illegal func for instruction ${op.toString(16)}`)
             }
-          }
+            break
+          case 0b0001111: 
+            const funct3 = bitsfrom(op, 12, 3)
+            const succ = bitsfrom(op, 20, 4)
+            const pred = bitsfrom(op, 24, 4)
+            const fm = bitsfrom(op, 28, 4)
+
+            if (funct3 == 0b001) i.FENCEI()
+            else if (funct3) throw new Error(`Illegal funct3 for instruction ${op.toString(16)}`)
+            else if (!rd && !rs1 && succ == 0b0011 && pred == 0b0011 && fm == 0b1000) i.FENCETSO()
+            else if (!rd && !rs1 && succ == 0b0000 && pred == 0b0001 && fm == 0b0000) i.PAUSE()
+            else i.FENCE(rd, rs1, succ, pred, fm)
+            break
+          case 0b1110011: {
+              switch (op) {
+                case 115: i.ECALL(); break
+                case 1048691: i.EBREAK(); break
+                default:
+                  switch (func3) {
+                    case 0b001: i.CSRRW(rd, rs1, imm); break
+                    case 0b010: i.CSRRS(rd, rs1, imm); break
+                    case 0b011: i.CSRRC(rd, rs1, imm); break
+                    case 0b101: i.CSRRWI(rd, rs1, imm); break
+                    case 0b110: i.CSRRSI(rd, rs1, imm); break
+                    case 0b111: i.CSRRCI(rd, rs1, imm); break
+                    default:
+                      throw new Error(`Illegal func for instruction ${op.toString(16)}`)
+                  }
+              }
+            }
+            break
           default:
             throw new Error(`Illegal opcode for instruction ${op.toString(16)}`)
         }
@@ -278,7 +295,7 @@ export function decode(op, i) {
         const imm = combine([[0, 1], [imm_1_4, 4], [imm_5_10, 6], [imm_11, 1], [imm_12, 1]])
 
         switch (opcode) {
-          case 0b1100111:
+          case 0b1100011:
             switch (func3) {
               case 0b000: i.BEQ(rs1, rs2, imm); break
               case 0b001: i.BNE(rs1, rs2, imm); break
@@ -310,9 +327,6 @@ export function decode(op, i) {
       break;
     case TYPES.J:
       {
-        // 1 1111000110 1 11101111 11100 1101111
-        // 20    10-1  11   19-12   rd   opcode
-        // 1 11101111 1 1111000110
         const rd = bitsfrom(op, 7, 5);
         const imm_12_19 = bitsfrom(op, 12, 8);
         const imm_11 = bitsfrom(op, 20, 1)
@@ -345,14 +359,6 @@ export function decode(op, i) {
             else i.FENCE(rd, rs1, succ, pred, fm)
           }
           break
-        case 0b1110011:
-          switch (op) {
-            case 115: i.ECALL(); break
-            case 1048691: i.EBREAK(); break
-            default:
-              throw new Error(`Illegal instruction`)
-          }
-          break
         default:
           throw new Error(`Illegal opcode for instruction ${op.toString(16)}`)
       }
@@ -366,7 +372,6 @@ function gettype(opcode) {
   switch (opcode) {
     //R-type
     case 0b0110011:
-    case 0b0010011:
     case 0b0101111:
       return TYPES.R;
     //I-type
@@ -374,7 +379,6 @@ function gettype(opcode) {
     case 0b0000011:
     case 0b0010011:
     case 0b0001111:
-    case 0b1110011:
       return TYPES.I;
     //S-type
     case 0b0100011:
@@ -390,7 +394,6 @@ function gettype(opcode) {
     case 0b1101111:
       return TYPES.J
     //OTHER-type
-    case 0b0001111:
     case 0b1110011:
       return TYPES.OTHER
   }

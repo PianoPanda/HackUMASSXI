@@ -1,6 +1,7 @@
 import { decode } from "./decode"
 import { read32, flushMemory } from "./ram"
 import { loadbin } from "./boot"
+import { toBinary } from "./util"
 
 const instructions = {
   SLLI: function (rd, rs1, shamt) { console.log("SLLI", "rd", rd, "rs1", rs1, "shamt", shamt, "\n") },
@@ -92,6 +93,7 @@ export async function disassemble(path) {
   const num = await loadbin(path)
   console.log(num)
   for (let i=0; i<num; i++) {
+    console.log(i, toBinary(read32(i*4)))
     decode(read32(i*4), instructions)
   }
   
