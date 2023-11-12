@@ -4,6 +4,6 @@ import { test } from "bun:test";
 
 test("tests loadbin", async () => {
   flushMemory()
-  await loadbin("testfileartifacts/test.bin")
-  console.log("found", read32(0))
-}).skip()
+  let num = await loadbin("testfileartifacts/fnAndBranch/test.bin")
+  console.log("found", read32(0), num)
+})
