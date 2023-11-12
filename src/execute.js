@@ -366,7 +366,7 @@ export const instructions = {
   ADDI: function (rd, rs1, imm) {
     setreg(rd, getreg(rs1) + imm)
   },
-  STLI: function (rd, rs1, imm) {
+  SLTI: function (rd, rs1, imm) {
     setreg(rd, getreg(rs1) < imm ? 1 : 0)
   },
   SLTIU: function (rd, rs1, imm) {
@@ -429,27 +429,27 @@ export const instructions = {
 
   BEQ: function (rs1, rs2, imm) {
     if (getreg(rs1) == getreg(rs2))
-      setpc((getpc() + 4) + (imm << 1))
+      setpc((getpc() - 4) + imm)
   },
   BNE: function (rs1, rs2, imm) {
     if (getreg(rs1) != getreg(rs2))
-      setpc((getpc() + 4) + (imm << 1))
+      setpc((getpc() - 4) + imm)
   },
   BLT: function (rs1, rs2, imm) {
     if ((getreg(rs1) | 0) < (getreg(rs2) | 0))
-      setpc((getpc() + 4) + (imm << 1))
+      setpc((getpc() - 4) + imm)
   },
   BLTU: function (rs1, rs2, imm) {
     if (getreg(rs1) < getreg(rs2))
-      setpc((getpc() + 4) + (imm << 1))
+      setpc((getpc() - 4) + imm)
   },
   BGE: function (rs1, rs2, imm) {
     if ((getreg(rs1) | 0) >= (getreg(rs2) | 0))
-      setpc((getpc() + 4) + (imm << 1))
+      setpc((getpc() - 4) + imm)
   },
   BGEU: function (rs1, rs2, imm) {
     if (getreg(rs1) >= getreg(rs2))
-      setpc((getpc() + 4) + (imm << 1))
+      setpc((getpc() - 4) + imm)
   },
 
 }
