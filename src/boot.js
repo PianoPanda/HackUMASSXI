@@ -1,7 +1,7 @@
 import { write32 } from "./ram.js"
-import * as fs from "fs"
+// import * as fs from "fs"
 
-export async function loadbin(path) {
+/*export async function loadbin(path) {
   return new Promise(resolve => fs.open(path, "r", function(err, fd) {
     if (err) throw err
     const buffer = Buffer.alloc(4)
@@ -12,6 +12,16 @@ export async function loadbin(path) {
     }
     resolve(i)
   }))
+}*/
+
+export async function loadbin(file) {
+  return file.arrayBuffer().then(arr => {
+    const int8arr = new Int8Array(arr)
+    for (let i=0; i<int8arr.length; i++) {
+      write32(i, int8arr[i])
+    }
+    return int8arr.length
+  })
 }
 
 

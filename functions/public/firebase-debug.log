@@ -1,0 +1,57 @@
+[debug] [2023-11-12T06:20:30.256Z] ----------------------------------------------------------------------
+[debug] [2023-11-12T06:20:30.258Z] Command:       /nix/store/1l03gdg4w3cvkygvbxsq9i19flnp1p3y-nodejs-18.17.1/bin/node /home/bennett/.nix-profile/bin/firebase emulators:start
+[debug] [2023-11-12T06:20:30.258Z] CLI Version:   12.1.0
+[debug] [2023-11-12T06:20:30.258Z] Platform:      linux
+[debug] [2023-11-12T06:20:30.258Z] Node Version:  v18.17.1
+[debug] [2023-11-12T06:20:30.258Z] Time:          Sun Nov 12 2023 01:20:30 GMT-0500 (Eastern Standard Time)
+[debug] [2023-11-12T06:20:30.258Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2023-11-12T06:20:30.302Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2023-11-12T06:20:30.302Z] > authorizing via signed-in user (bennettgillig@gmail.com)
+[info] i  emulators: Starting emulators: hosting {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: hosting"}}
+[debug] [2023-11-12T06:20:30.308Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2023-11-12T06:20:30.308Z] [hosting] Hosting Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2023-11-12T06:20:30.308Z] assigned listening specs for emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"hosting":[{"address":"127.0.0.1","family":"IPv4","port":5000}]},"metadata":{"message":"assigned listening specs for emulators"}}
+[debug] [2023-11-12T06:20:30.316Z] [hub] writing locator at /tmp/hub-hackumass11.json
+[debug] [2023-11-12T06:20:30.322Z] > refreshing access token with scopes: []
+[debug] [2023-11-12T06:20:30.323Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2023-11-12T06:20:30.323Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2023-11-12T06:20:30.517Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2023-11-12T06:20:30.517Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2023-11-12T06:20:30.533Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/hackumass11/sites 
+[debug] [2023-11-12T06:20:31.258Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/hackumass11/sites 200
+[debug] [2023-11-12T06:20:31.258Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/hackumass11/sites {"sites":[{"name":"projects/hackumass11/sites/hackumass11","defaultUrl":"https://hackumass11.web.app","appId":"1:763208243015:web:a52b595706f2c42cc19e62","type":"DEFAULT_SITE"}]}
+[debug] [2023-11-12T06:20:31.258Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/hackumass11/webApps/1:763208243015:web:a52b595706f2c42cc19e62/config [none]
+[debug] [2023-11-12T06:20:31.795Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/hackumass11/webApps/1:763208243015:web:a52b595706f2c42cc19e62/config 200
+[debug] [2023-11-12T06:20:31.795Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/hackumass11/webApps/1:763208243015:web:a52b595706f2c42cc19e62/config {"projectId":"hackumass11","appId":"1:763208243015:web:a52b595706f2c42cc19e62","storageBucket":"hackumass11.appspot.com","apiKey":"AIzaSyBZq4EANWCq7qEzDPYF3rxxMTWu6MUsZ7Y","authDomain":"hackumass11.firebaseapp.com","messagingSenderId":"763208243015"}
+[debug] [2023-11-12T06:20:31.809Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/hackumass11 [none]
+[debug] [2023-11-12T06:20:32.036Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/hackumass11 200
+[debug] [2023-11-12T06:20:32.036Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/hackumass11 {"projectId":"hackumass11","projectNumber":"763208243015","displayName":"hackumass11","name":"projects/hackumass11","resources":{"hostingSite":"hackumass11"},"state":"ACTIVE","etag":"1_18e82097-4c88-4297-bfdb-cac88d231bed"}
+[info] i  hosting[hackumass11]: Serving hosting files from: public {"metadata":{"emulator":{"name":"hosting"},"message":"Serving hosting files from: \u001b[1mpublic\u001b[22m"}}
+[info] ✔  hosting[hackumass11]: Local server: http://127.0.0.1:5000 {"metadata":{"emulator":{"name":"hosting"},"message":"Local server: \u001b[4m\u001b[1mhttp://127.0.0.1:5000\u001b[22m\u001b[24m"}}
+[warn] ⚠  emulators: The Emulator UI is not starting, either because none of the emulated products have an interaction layer in Emulator UI or it cannot determine the Project ID. Pass the --project flag to specify a project. {"metadata":{"emulator":{"name":"hub"},"message":"The Emulator UI is not starting, either because none of the emulated products have an interaction layer in Emulator UI or it cannot determine the Project ID. Pass the --project flag to specify a project."}}
+[info] 
+┌─────────────────────────────────────────────────────────────┐
+│ ✔  All emulators ready! It is now safe to connect your app. │
+└─────────────────────────────────────────────────────────────┘
+
+┌──────────┬────────────────┐
+│ Emulator │ Host:Port      │
+├──────────┼────────────────┤
+│ Hosting  │ 127.0.0.1:5000 │
+└──────────┴────────────────┘
+  Emulator Hub running at 127.0.0.1:4400
+  Other reserved ports: 4500
+
+Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
+ 
+[info] i  hosting: 127.0.0.1 - - [12/Nov/2023:06:20:35 +0000] "GET / HTTP/1.1" 200 375 "-" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"127.0.0.1 - - [12/Nov/2023:06:20:35 +0000] \"GET / HTTP/1.1\" 200 375 \"-\" \"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36\""}}
+[info] i  hosting: 127.0.0.1 - - [12/Nov/2023:06:20:35 +0000] "GET /index.js HTTP/1.1" 200 259 "http://127.0.0.1:5000/" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"127.0.0.1 - - [12/Nov/2023:06:20:35 +0000] \"GET /index.js HTTP/1.1\" 200 259 \"http://127.0.0.1:5000/\" \"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36\""}}
+[info] i  hosting: 127.0.0.1 - - [12/Nov/2023:06:20:35 +0000] "GET /favicon.ico HTTP/1.1" 200 375 "http://127.0.0.1:5000/" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"127.0.0.1 - - [12/Nov/2023:06:20:35 +0000] \"GET /favicon.ico HTTP/1.1\" 200 375 \"http://127.0.0.1:5000/\" \"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36\""}}
+[debug] [2023-11-12T06:27:30.119Z] Received signal SIGINT (Ctrl-C) 1
+[info]  
+[info] i  emulators: Received SIGINT (Ctrl-C) for the first time. Starting a clean shutdown. 
+[info] i  emulators: Please wait for a clean shutdown or send the SIGINT (Ctrl-C) signal again to stop right now. 
+[info] i  emulators: Shutting down emulators. {"metadata":{"emulator":{"name":"hub"},"message":"Shutting down emulators."}}
+[info] i  hosting: Stopping Hosting Emulator {"metadata":{"emulator":{"name":"hosting"},"message":"Stopping Hosting Emulator"}}
+[info] i  hub: Stopping emulator hub {"metadata":{"emulator":{"name":"hub"},"message":"Stopping emulator hub"}}

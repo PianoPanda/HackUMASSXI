@@ -133,7 +133,7 @@ export const instructions = {
 
   //TODO: TEST THIS
   // Type-R
-  SLLI: function (rd, rs1, shamt) { //TODO SLLI SRLI SRAI lowkey confusing someone double check this
+  SLLI: function (rd, rs1, shamt) {
     setreg(rd, getreg(rs1) << shamt)
   },
   SRLI: function (rd, rs1, shamt) {
@@ -156,26 +156,26 @@ export const instructions = {
     setreg(rd, getreg(rs1) << (getreg(rs2) & 0b11111))
   },
   MULH: function (rd, rs1, rs2) {
-    setreg(rd, Number(BigInt(getreg(rs1) | 0) * BigInt(getreg(rs2) | 0) >>> BigInt(32)))
+    setreg(rd, Number(BigInt(getreg(rs1) | 0) * BigInt(getreg(rs2) | 0) >> BigInt(32)))
   },
   SLT: function (rd, rs1, rs2) {
     setreg(rd, (getreg(rs1) | 0) < (getreg(rs2) | 0) ? 1 : 0)
   },
   MULHSU: function (rd, rs1, rs2) {
-    setreg(rd, Number(BigInt(getreg(rs1) | 0) * BigInt(getreg(rs2)) >>> BigInt(32)))
+    setreg(rd, Number(BigInt(getreg(rs1) | 0) * BigInt(getreg(rs2)) >> BigInt(32)))
   },
   SLTU: function (rd, rs1, rs2) {
     setreg(rd, getreg(rs1) < getreg(rs2) ? 1 : 0)
   },
   MULHU: function (rd, rs1, rs2) {
-    setreg(rd, Number(BigInt(getreg(rs1)) * BigInt(getreg(rs2)) >>> BigInt(32)))
+    setreg(rd, Number(BigInt(getreg(rs1)) * BigInt(getreg(rs2)) >> BigInt(32)))
   },
   XOR: function (rd, rs1, rs2) {
     setreg(rd, getreg(rs1) ^ getreg(rs2))
   },
-  DIV: function (rd, rs1, rs2) { //signed division
-    if (getreg(rs2) === 0) throw new Exception("Signed division by 0")
-    setreg(rd, (getreg(rs1) | 0) / (getreg(rs2) | 0) | 0)
+  DIV: function (rd, rs1, rs2) {
+    if (getreg(rs2) === 0) setreg(rd, -1)
+    else setreg(rd, (getreg(rs1) | 0) / (getreg(rs2) | 0) | 0)
   },
   SRL: function (rd, rs1, rs2) {
     setreg(rd, getreg(rs1) >> (getreg(rs2) & 0b11111))
@@ -184,11 +184,8 @@ export const instructions = {
     setreg(rd, getreg(rs1) >>> (getreg(rs2) & 0b11111))
   },
   DIVU: function (rd, rs1, rs2) {
-    if (getreg(rs2) === 0) {
-      setreg(rd, -1 | 0);
-    } else {
-      setreg(rd, Math.trunc(getreg(rs1) / getreg(rs2)));
-    }
+    if (getreg(rs2) === 0) setreg(rd, -1 | 0);
+    else setreg(rd, Math.trunc(getreg(rs1) / getreg(rs2)));
   },
   OR: function (rd, rs1, rs2) {
     setreg(rd, getreg(rs1) | getreg(rs2))

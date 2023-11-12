@@ -93,7 +93,8 @@ test("SUB: zeros", () => {
 test("DIV: zero", () => {
   setreg(1, 2)
   setreg(2, 0)
-  expect(() => instructions.DIV(_, 1, 2)).toThrow()
+  instructions.DIV(3, 1, 2)
+  expect(getreg(3)|0).toBe(-1)
 })
 
 test("DIV: regular division", () => {
@@ -302,4 +303,114 @@ test("AMOMAXUW", () => {
   assert(getreg(1) === 100);
   assert(getreg(2) === 0xCAFECAFE);
   assert(getreg(3) === 0xDEADDEAD);
+})
+
+test("SLLI", () => {
+  setreg(1, 3)
+  instructions.SLLI(2, 1, 2)
+  assert(getreg(2) == 12)
+})
+
+test("SRLI", () => {
+  setreg(1, 12)
+  instructions.SRLI(2, 1, 2)
+  assert(getreg(2) == 3)
+
+  setreg(1, -12)
+  instructions.SRLI(2, 1, 2)
+  expect(getreg(2)|0).toBe(1073741821)
+  
+})
+
+test("SRAI", () => {
+  setreg(1, -8)
+  instructions.SRAI(2, 1, 3)
+  expect(getreg(2)|0).toBe(-1)
+
+  setreg(1, -12)
+  instructions.SRAI(2, 1, 2)
+  expect(getreg(2)|0).toBe(-3)
+})
+
+test("SLL", () => {
+  setreg(1, 5)
+  setreg(2, 0b100010)
+  instructions.SLL(3, 1, 2)
+  expect(getreg(3)).toBe(20)
+})
+
+test("SRL", () => {
+  setreg(1, 20)
+  setreg(2, 0b100010)
+  instructions.SRL(3, 1, 2)
+  expect(getreg(3)).toBe(5)
+})
+
+test("MULH", () => {
+  setreg(1, 0x0fffffff)
+  setreg(2, 0x000fffff)
+  instructions.MULH(3, 1, 2)
+  expect(getreg(3)).toBe(0xffff)
+
+  setreg(1, 0xf0000000)
+  setreg(2, 0x0fffffff)
+  instructions.MULH(3, 1, 2)
+  expect(getreg(3)|0).toBe(-16777216)
+})
+
+test("SLT", () => {
+  setreg(1, 0xdeedaa)
+  setreg(2, 2)
+  setreg(3, 3)
+  instructions.SLT(1, 2, 3)
+  expect(getreg(1)).toBe(1)
+
+  instructions.SLT(1, 3, 2)
+  expect(getreg(1)).toBe(0)
+})
+
+test("MULHSU", () => {
+  setreg(2, 0xfff00000) //signed
+  setreg(1, 0xf0000000) //unsigned
+  instructions.MULHSU(3, 1, 2)
+  expect(getreg(3)|0).toBe(0xf0010000|0)
+})
+
+test("SLTU", () => {
+  setreg(3, 0xdeedaa)
+  setreg(1, 0xf0000001)
+  setreg(2, 0xf0000002)
+  instructions.SLTU(3, 1, 2)
+  expect(getreg(3)).toBe(1)
+
+  instructions.SLTU(3, 2, 1)
+  expect(getreg(3)).toBe(0)
+
+})
+
+test("MULHU", () => {
+  setreg(1, 0x000fffff)
+  setreg(2, 0x0000ffff)
+  instructions.MULHU(3, 1, 2)
+  expect(getreg(3)).toBe(0xf)
+})
+
+test("XOR", () => {
+  setreg(1, 0b1001)
+  setreg(2, 0b1010)
+  instructions.XOR(3, 1, 2)
+  expect(getreg(3)).toBe(0b0011)
+})
+
+test("SRA", () => {
+  setreg(1, -8)
+  setreg(3, 3)
+  instructions.SRAI(2, 1, 3)
+  expect(getreg(2)|0).toBe(-1)
+
+  setreg(1, -12)
+  setreg(2, 2)
+  instructions.SRAI(2, 1, 2)
+  expect(getreg(2)|0).toBe(-3)
+  
 })

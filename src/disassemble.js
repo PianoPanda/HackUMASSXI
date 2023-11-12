@@ -1,7 +1,6 @@
-import { decode } from "./decode"
-import { read32, flushMemory } from "./ram"
-import { loadbin } from "./boot"
-import { toBinary } from "./util"
+import { decode } from "./decode.js"
+import { read32, flushMemory } from "./ram.js"
+import { loadbin } from "./boot.js"
 
 export const instructions = {
   SLLI: function (rd, rs1, shamt) { console.log("SLLI", "rd", rd, "rs1", rs1, "shamt", shamt) },
