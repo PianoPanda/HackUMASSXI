@@ -1,9 +1,7 @@
 import assert from "assert";
 import { getreg, setreg, instructions, setpc } from "./execute.js"
 import { expect, test } from "bun:test";
-import { read32, write32 } from "./ram.js";
-import { toHex } from "./util.js";
-import { type } from "os";
+import { read32, write32, flushMemory } from "./ram.js";
 
 const testExecutable = new Uint8Array(
   new Uint32Array([
@@ -414,3 +412,28 @@ test("SRA", () => {
   expect(getreg(2)|0).toBe(-3)
   
 })
+
+test("LB", () => {
+  flushMemory()
+  write32(0, 0xdeedeeda)
+  setreg(1, 12)
+  instructions.LB(2, 1, -12)
+  expect(getreg(2)|0).toBe(0xda << 24 >> 24)
+})
+test("LH", () => {
+  flushMemory()
+  write32(0, 0xdeedeeda)
+  setreg(1, 12)
+  instructions.LH(2, 1, -12)
+  expect(getreg(2)|0).toBe(0xeeda << 16 >> 16)
+  
+})
+test("LW", () => {
+  flushMemory()
+  write32(0, 0xdeedeeda)
+  setreg(1, 12)
+  instructions.LW(2, 1, -12)
+  expect(getreg(2)).toBe(0xdeedeeda)
+  
+})
+
