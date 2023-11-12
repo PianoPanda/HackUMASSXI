@@ -9,9 +9,9 @@ function logWord(x, msg = "") {
     console.log(`${msg}0x${x.toString(16).padStart(8, 0)}`)
 }
 
-export default function loadELF(elfData, startSymbolName = "main") {
+export default function loadELF(elfData, startSymbolName = undefined) {
     if (typeof (elfData) !== "object" || elfData.constructor !== Uint8Array) throw new Error("Invalid input: loadELF only accepts Uint8Array");
-    function getString(addr){
+    function getString(addr) {
         let builtString = "";
         while (elfData[addr] !== 0) {
             builtString = `${builtString}${String.fromCodePoint(elfData[addr])}`
@@ -55,6 +55,8 @@ export default function loadELF(elfData, startSymbolName = "main") {
 
     const e_shstrndx = readHalfWord(0x32);
 
+    const e_entry = readWord(0x18)
+
     logWord(e_shnum, "e_shnum = ")
     logWord(e_shoff, "shoff = ")
     logWord(e_shstrndx, "shstrndx = ")
@@ -93,7 +95,7 @@ export default function loadELF(elfData, startSymbolName = "main") {
         logWord(manif.sh_addr, "\t\taddr = ")
         logWord(manif.sh_flags, "\t\tflags = ")
 
-        if(manif.sh_flags & 0x2){
+        if (manif.sh_flags & 0x2) {
             //load into memory
             logWord(manif.dataSegment.length, "\t\tloaded length = ")
             manif.dataSegment.forEach((value, index) => memory[index + manif.sh_addr] = value)
@@ -108,7 +110,7 @@ export default function loadELF(elfData, startSymbolName = "main") {
     let symbol_index = 0;
     base = symTabSection.sh_offset;
     const symbolManifList = [];
-    while(symbol_index !== num_symbols){
+    while (symbol_index !== num_symbols) {
         const manif = {}
         manif.name_ptr = readWord(0)
         manif.address = readWord(4)
@@ -125,8 +127,13 @@ export default function loadELF(elfData, startSymbolName = "main") {
         manif.name = getString(symbolNameBase + manif.name_ptr)
     })
     const startCode = symbolManifList.find(sym => sym.name === startSymbolName)
-    setpc(startCode.address)
-    logWord(startCode.address, "setting pc to ");
+    if (startCode) {
+        setpc(startCode.address)
+        logWord(startCode.address, "setting pc to ");
+    } else {
+        setpc(e_entry)
+        logWord(e_entry, "setting pc to ");
+    }
     //set registers
     //load data segments
     console.log("ELF parsed successfully");
