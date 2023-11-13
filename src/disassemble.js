@@ -111,3 +111,19 @@ export async function disassemble(path) {
   return res
 }
 
+
+export function disassembleElves(start, length) {
+  const res = []
+  for (let i=start; i<start+length-4; i += 4) {
+    console.log(i, start + length)
+    console.log(read32(i))
+    try {
+    decode(read32(i), instructions)
+    res.push(out)
+    }
+    catch {
+      break
+    }
+  }
+  return res
+}

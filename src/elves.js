@@ -1,6 +1,5 @@
-import { main } from "bun";
-import { setpc } from "./execute";
-import { RAM_SIZE, memory } from "./ram";
+import { setpc } from "./execute.js";
+import { RAM_SIZE, memory } from "./ram.js";
 
 function logByte(x, msg = "") {
     console.log(`${msg}0x${x.toString(16).padStart(2, 0)}`)

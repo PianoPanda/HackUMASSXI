@@ -117,6 +117,8 @@ function readCSR(csr) {
   }
 }
 
+export function setCallback(a) { sysout_callback = a}
+let sysout_callback
 function writeCSR(csr, value) {
   csr &= 0xfff;
   if (!(csr in csrData)) throw new Error(`Attempted to write CSR 0x${toHex(csr, 3)}, which is not implemented`)
@@ -124,7 +126,8 @@ function writeCSR(csr, value) {
   //TODO implement all side effects
   switch (csr) {
     case 0x800:
-      process.stdout.write(String.fromCharCode(value));
+      // process.stdout.write(String.fromCharCode(value));
+      sysout_callback(value)
       return;
     case 0x801:
       throw new Error(`Pretend this is a graceful shutdown with exit value ${value}!`);
@@ -454,7 +457,7 @@ export const instructions = {
 
 }
 
-export function cpuSteps(steps) {
+export function cpuSteps(steps, callback) {
   // do CSR timer stuff
 
   // do timer interrupts if necessary
