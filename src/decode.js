@@ -1,3 +1,5 @@
+import { logReg } from "./execute";
+
 /**
  * Enum for types of instruction
  * @readonly
@@ -208,7 +210,7 @@ export function decode(op, i) {
               case 0b011: i.SLTIU(rd, rs1, imm); break
               case 0b100: i.XORI(rd, rs1, imm); break
               case 0b110: i.ORI(rd, rs1, imm); break
-              case 0b111: i.ANDI(rd, rs1, imm);
+              case 0b111: i.ANDI(rd, rs1, imm); break
               case 0b001: i.SLLI(rd, rs1, shamt); break
               case 0b101:
                 switch (funct7) {

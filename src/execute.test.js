@@ -49,43 +49,43 @@ test("SUB: Two Positives", () => {
   setreg(1, 1)
   setreg(2, 99)
   instructions.SUB(3, 1, 2)
-  expect(getreg(3) | 0).toBe(98)
+  expect(getreg(3) | 0).toBe(-98)
 })
 
 test("SUB: Two Negatives", () => {
   setreg(1, -1999)
   setreg(2, -9999)
   instructions.SUB(3, 1, 2)
-  expect(getreg(3) | 0).toBe(-8000)
+  expect(getreg(3) | 0).toBe(8000)
 })
 
 test("SUB: Pos & Neg", () => {
   setreg(1, 25)
   setreg(2, -125)
   instructions.SUB(3, 1, 2)
-  expect(getreg(3) | 0).toBe(-150)
+  expect(getreg(3) | 0).toBe(150)
 })
 
 test("SUB: zeros", () => {
   setreg(1, 0)
   setreg(2, 123)
   instructions.SUB(3, 1, 2)
-  expect(getreg(3) | 0).toBe(123)
+  expect(getreg(3) | 0).toBe(-123)
 
   setreg(1, 0)
   setreg(2, -321)
   instructions.SUB(3, 1, 2)
-  expect(getreg(3) | 0).toBe(-321)
+  expect(getreg(3) | 0).toBe(321)
 
   setreg(1, 123)
   setreg(2, 0)
   instructions.SUB(3, 1, 2)
-  expect(getreg(3) | 0).toBe(-123)
+  expect(getreg(3) | 0).toBe(123)
 
   setreg(1, -321)
   setreg(2, 0)
   instructions.SUB(3, 1, 2)
-  expect(getreg(3) | 0).toBe(321)
+  expect(getreg(3) | 0).toBe(-321)
 })
 
 test("DIV: zero", () => {
@@ -141,36 +141,36 @@ test("MUL: large values", () => {
 })
 
 test("LUI: typical input", () => {
-  instructions.LUI(1, 1)
+  instructions.LUI(1, 0x00001000)
   assert(getreg(1) === 0x0000_1000)
 })
 
 test("LUI: high input", () => {
-  instructions.LUI(1, 0x000F_FFFF)
+  instructions.LUI(1, 0xF_FFFF000)
   assert(getreg(1) === 0xFFFF_F000)
 })
 
 test("AUIPC: low pc, low imm", () => {
   setpc(0x0000_0ABC)
-  instructions.AUIPC(1, 1)
+  instructions.AUIPC(1, 0x1000)
   assert(getreg(1) === 0x0000_1ABC)
 })
 
 test("AUIPC: low pc, high imm", () => {
   setpc(0x0000_0ABC)
-  instructions.AUIPC(1, 0x000F_FFFF)
+  instructions.AUIPC(1, 0xF_FFFF000)
   assert(getreg(1) === 0xFFFF_FABC)
 })
 
 test("AUIPC: high pc, low imm", () => {
   setpc(0xABCD_1234)
-  instructions.AUIPC(1, 0x0000_0001)
+  instructions.AUIPC(1, 0x0000_1000)
   assert(getreg(1) === 0xABCD_2234)
 })
 
 test("AUIPC: high pc, high imm", () => {
   setpc(0xABCD_1234)
-  instructions.AUIPC(1, 0x000F_FFFF)
+  instructions.AUIPC(1, 0xFFFF_F000)
   assert(getreg(1) === 0xABCD_0234)
 })
 

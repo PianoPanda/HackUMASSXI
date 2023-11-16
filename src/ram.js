@@ -40,6 +40,31 @@ export function write32(address, data) {
   memory[address + 2] = (data >> 16) & 0xff;
   memory[address + 3] = (data >> 24) & 0xff;
 }
+export function write16(address, data) {
+  if (!Number.isInteger(data))
+    throw new Error(`Floating-point value passed to write32: ${address}`);
+
+  if (!Number.isInteger(address) || address < 0 || address > RAM_SIZE - 4)
+    throw new Error(
+      `Illegal address for 32 bit write: 0x${address.toString(16)}`
+    );
+
+  memory[address + 0] = (data >> 0) & 0xff;
+  memory[address + 1] = (data >> 8) & 0xff;
+}
+export function write8(address, data) {
+  if (!Number.isInteger(data))
+    throw new Error(`Floating-point value passed to write32: ${address}`);
+
+  if (!Number.isInteger(address) || address < 0 || address > RAM_SIZE - 4)
+    throw new Error(
+      `Illegal address for 32 bit write: 0x${address.toString(16)}`
+    );
+
+  memory[address + 0] = (data >> 0) & 0xff;
+}
+
+
 
 export function flushMemory() {
   memory.fill(0)

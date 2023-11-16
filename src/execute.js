@@ -1,6 +1,6 @@
 import { decode } from "./decode.js";
 import { instructions as debug_instruction } from "./disassemble.js";
-import { RAM_SIZE, memory, read32, write32 } from "./ram.js"
+import { RAM_SIZE, memory, read32, write16, write32, write8 } from "./ram.js"
 import { compuns, format32, toBinary, toHex } from "./util.js"
 
 export const registers = new Uint32Array(32).fill(0);
@@ -154,7 +154,7 @@ export function getreg(n) {
  * @param {string} name 
  */
 export function logReg(name) {
-  const reg = ABIspec.findIndex(x => x.includes(name))
+  const reg = ABIspec.findIndex(x => x === name)
   if(reg === -1) throw new Error(`${name} is not a register`)
   console.log(
     `\t${name} = 0x${toHex(registers[reg])}`
@@ -197,10 +197,10 @@ export const instructions = {
   },
 
   ADD: function (rd, rs1, rs2) {
-    setreg(rd, getreg(rs1) + getreg(rs2))
+    setreg(rd, format32(BigInt(getreg(rs1)) + BigInt(getreg(rs2))))
   },
   SUB: function (rd, rs1, rs2) {
-    setreg(rd, getreg(rs2) - getreg(rs1))
+    setreg(rd, (getreg(rs1) | 0) - (getreg(rs2) | 0))
   },
   MUL: function (rd, rs1, rs2) {
     setreg(rd, Number(BigInt.asIntN(32, BigInt(getreg(rs1)) * BigInt(getreg(rs2)))))
@@ -325,13 +325,13 @@ export const instructions = {
 
   //TODO: TEST THIS
   JAL: function (rd, imm) {
-    setreg(rd, getpc() + 4)
+    setreg(rd, getpc())
     setpc(getpc() + imm - 4)
   },
 
   JALR: function (rd, rs1, imm) {
-    setreg(rd, getpc() + 4)
-    setpc(((getreg(rs1) + imm) & ~1) - 4) //accounting for auto-increment of pc
+    setreg(rd, getpc())
+    setpc(((getreg(rs1) + imm) & ~1)) //accounting for auto-increment of pc
     /*
       "The target address is obtained by adding the sign-extended
       12-bit I-immediate to the register rs1, then setting the
@@ -358,10 +358,10 @@ export const instructions = {
 
   //TODO: TEST THESE
   SB: function (rs1, rs2, imm) {
-    write32(getreg(rs1) + imm, getreg(rs2) << 24 >> 24)
+    write8(getreg(rs1) + imm, getreg(rs2) << 24 >> 24)
   },
   SH: function (rs1, rs2, imm) {
-    write32(getreg(rs1) + imm, getreg(rs2) << 16 >> 16)
+    write16(getreg(rs1) + imm, getreg(rs2) << 16 >> 16)
   },
   SW: function (rs1, rs2, imm) {
     write32(getreg(rs1) + imm, getreg(rs2))

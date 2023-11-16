@@ -21,6 +21,10 @@ void print_string(char *str){
     }
 }
 
+void _start() {
+    main();
+}
+
 int main() {
     print_string("Hello World!\n");
     shutdown();
